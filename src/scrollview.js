@@ -1,5 +1,23 @@
 (function (window) {
 
+    var easingFn = {
+        quadratic: {
+            transition: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        },
+        circular: {
+            transition: 'cubic-bezier(0.1, 0.57, 0.1, 1)'
+        },
+        back: {
+            transition: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        },
+        bounce: {
+            transition: 'cubic-bezier(0.5, -0.5, 0.5, 1.5)'
+        },
+        elastic: {
+
+        }
+    };
+
     // private functions
     var handleStart = function (ev) {
 
@@ -9,17 +27,12 @@
         }
 
         this.isScrolling = ev.pointerId; // lock for pointer
-        this.hasMoved = false;
-        this.distX = 0;
-        this.distY = 0;
-        this.directionX = 0;
-        this.directionY = 0;
+        this.hasMoved = false; // if scrolling has started
+
+        this.direction = [0, 0];
         this.directionLocked = null;
+
         this.startTime = new Date().getTime();
-        this.startX = this.x;
-        this.startY = this.y;
-        this.absStartX = this.x;
-        this.absStartY = this.y;
         this.pointX = ev.pageX;
         this.pointY = ev.pageY;
 
@@ -38,15 +51,13 @@
         var deltaX = ev.pageX - this.pointX,
             deltaY = ev.pageY - this.pointY,
             timestamp = new Date().getTime(),
-            newX, newY,
-            absDistX, absDistY;
+            newX, newY;
 
         this.pointX = ev.pageX;
         this.pointY = ev.pageY;
-        this.distX += deltaX;
-        this.distY += deltaY;
-        absDistX = Math.abs(this.distX);
-        absDistY = Math.abs(this.distY);
+
+        newX = this.x + deltaX;
+        newY = this.y + deltaY;
 
         // TODO add WIGGLE_THRESHOLD
 
@@ -55,15 +66,7 @@
             this.hasMoved = true;
         }
 
-        if (!this.directionLocked && !this.options.freeScroll) {
-            if (absDistX > absDistY + this.options.directionLockThreshold) {
-                this.directionLocked = 'h';
-            } else if (absDistY >= absDistX + this.options.directionLockThreshold) {
-                this.directionLocked = 'v';
-            } else {
-                this.directionLocked = 'n';
-            }
-        }
+        this.scrollTo(newX, newY);
 
     };
 
@@ -86,21 +89,6 @@
         }
         // TRIGGER: scrollend
     };
-
-    var transition = function (time) {
-        this.scroller.style['transitionDuration'] = (time || 0) + 'ms';
-    };
-
-    var translate = function (x, y) {
-        var transform = 'translate(' + x + 'px,' + y + 'px)';
-        transform += ' translateZ(0)';
-
-        this.scroller.style['transform'] = transform;
-
-        this.x = x;
-        this.y = y;
-    };
-
 
     function ScrollView (el, options) {
         var opt = options || {};
@@ -135,6 +123,9 @@
         this._handleEnd = handleEnd.bind(this);
 
         this.view.addEventListener('pointerdown', this._handleStart, false);
+
+        // inital scroll
+        this.scrollTo(this.options.startX, this.options.startY);
     }
 
     ScrollView.prototype = {
@@ -157,7 +148,19 @@
         },
 
         scrollTo: function (x, y, time, easing) {
+            var ease = easing || easingFn.circular,
+                transform = 'translate(' + x + 'px,' + y + 'px)',
+                translateZ = ' translateZ(0)';
 
+            this.x = x;
+            this.y = y;
+
+            console.log(x, y);
+            console.log(transform);
+
+            this.scroller.style['transitionTimingFunction'] = ease.transition;
+            this.scroller.style['transitionDuration'] = (time || 0) + 'ms';
+            this.scroller.style['webkitTransform'] = transform + translateZ;
         }
     };
 
