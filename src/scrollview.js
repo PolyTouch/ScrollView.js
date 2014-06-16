@@ -16,7 +16,21 @@
         elastic: {
 
         }
-    };
+    }, ppcm = (function () {
+        var div = document.createElement('div');
+        div.style.width = '1cm';
+
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(div);
+
+        var ppin = document.defaultView
+            .getComputedStyle(div, null)
+            .getPropertyValue('width');
+
+        body.removeChild(div);
+
+        return parseFloat(ppin);
+    }());
 
     // helpers
     function triggerEvent(type, data) {
