@@ -18,6 +18,25 @@
         }
     };
 
+    // helpers
+    function triggerEvent(type, data) {
+        var ev = new CustomEvent(type, {
+            detail: data || {},
+            bubbles: true,
+            cancelable: true
+        });
+
+        this.view.dispatchEvent(ev);
+    }
+
+    function calculateVelocity() {
+
+    }
+
+    function calculateMomentum() {
+
+    }
+
     // private functions
     function handleStart(ev) {
 
@@ -28,14 +47,17 @@
 
         this._curPointer = ev.pointerId; // lock for pointer
         this._hasMoved = false; // if scrolling has started
-
-        this._startTime = new Date().getTime();
         this._pointX = ev.pageX;
         this._pointY = ev.pageY;
         this._boundaries = [
             -this.view.scrollWidth + this.view.clientWidth,
             -this.view.scrollHeight + this.view.clientHeight
         ];
+        this._lastKeyFrame = {
+            timestamp: new Date().getTime(),
+            x: ev.pageX,
+            y: ev.pageY
+        };
 
         // bind events
         document.addEventListener('pointerup', this._handleEnd, false);
@@ -68,12 +90,20 @@
         newX = newX < this._boundaries[0] ? this._boundaries[0] : newX;
         newY = newY < this._boundaries[1] ? this._boundaries[1] : newY;
 
-
         if (!this._hasMoved) {
             this._hasMoved = true;
             triggerEvent.call(this, 'scrollstart', {
                 pointerId: this._curPointer
             });
+        }
+
+        // save new keyframe every 300ms
+        if (timestamp - this._lastKeyFrame.timestamp > 300) {
+            this._lastKeyFrame = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            }
         }
 
         this.scrollTo(newX, newY);
@@ -114,14 +144,15 @@
         }
     }
 
-    function triggerEvent(type, data) {
-        var ev = new CustomEvent(type, {
-            detail: data || {},
-            bubbles: true,
-            cancelable: true
-        });
+    function moveTo(x, y) {
+        var transform = 'translate(' + x + 'px,' + y + 'px)',
+            translateZ = ' translateZ(0)';
 
-        this.view.dispatchEvent(ev);
+        this.x = x;
+        this.y = y;
+
+        this.scroller.style['transform'] =
+        this.scroller.style['webkitTransform'] = transform + translateZ;
     }
 
     function ScrollView (el, options) {
@@ -176,19 +207,14 @@
         },
 
         scrollTo: function (x, y, time, easing) {
-            var ease = easing || easingFn.circular,
-                transform = 'translate(' + x + 'px,' + y + 'px)',
-                translateZ = ' translateZ(0)';
-
-            this.x = x;
-            this.y = y;
+            var ease = easing || easingFn.circular;
 
             this.scroller.style['transitionTimingFunction'] =
             this.scroller.style['webkitTransitionTimingFunction'] = ease.transition;
             this.scroller.style['transitionDuration'] =
             this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
-            this.scroller.style['transform'] =
-            this.scroller.style['webkitTransform'] = transform + translateZ;
+
+            moveTo.call(this, x, y);
         }
     };
 
