@@ -22,16 +22,16 @@
     var handleStart = function (ev) {
 
         if (!this.enabled ||
-            this.isScrolling) { // already scrolling by another pointer
+            this._curPointer) { // already scrolling by another pointer
             return;
         }
 
-        this.isScrolling = ev.pointerId; // lock for pointer
-        this.hasMoved = false; // if scrolling has started
+        this._curPointer = ev.pointerId; // lock for pointer
+        this._hasMoved = false; // if scrolling has started
 
-        this.startTime = new Date().getTime();
-        this.pointX = ev.pageX;
-        this.pointY = ev.pageY;
+        this._startTime = new Date().getTime();
+        this._pointX = ev.pageX;
+        this._pointY = ev.pageY;
 
         // bind events
         document.addEventListener('pointerup', this._handleEnd, false);
@@ -41,17 +41,17 @@
 
     var handleMove = function (ev) {
         if (!this.enabled ||
-            this.isScrolling !== ev.pointerId) {
+            this._curPointer !== ev.pointerId) {
             return;
         }
 
-        var deltaX = ev.pageX - this.pointX,
-            deltaY = ev.pageY - this.pointY,
+        var deltaX = ev.pageX - this._pointX,
+            deltaY = ev.pageY - this._pointY,
             timestamp = new Date().getTime(),
             newX, newY;
 
-        this.pointX = ev.pageX;
-        this.pointY = ev.pageY;
+        this._pointX = ev.pageX;
+        this._pointY = ev.pageY;
 
         newX = this.options.scrollX ? this.x + deltaX : this.x;
         newY = this.options.scrollY ? this.y + deltaY : this.y;
@@ -59,9 +59,9 @@
         // TODO add WIGGLE_THRESHOLD
 
 
-        if (!this.hasMoved) {
+        if (!this._hasMoved) {
             // TRIGGER: scrollstart
-            this.hasMoved = true;
+            this._hasMoved = true;
         }
 
         this.scrollTo(newX, newY);
@@ -72,7 +72,7 @@
 
     var handleEnd = function (ev) {
         if (!this.enabled ||
-            this.isScrolling !== ev.pointerId) {
+            this._curPointer !== ev.pointerId) {
             return;
         }
 
@@ -81,13 +81,16 @@
         document.removeEventListener('pointermove', this._handleMove, false);
 
         // reset state (wait for transition end)
-        this.isScrolling = null;
+        this._curPointer = null;
 
         // wait with eventing for transition
         if (ev.type === 'pointercancel') {
             // TRIGGER: scrollcancel
         }
+
+        if (this._hasMoved) {
         // TRIGGER: scrollend
+        }
     };
 
     function ScrollView (el, options) {
@@ -114,7 +117,7 @@
 
         // define initial state
         this.enabled = true;
-        this.isScrolling = false;
+        this._curPointer = false;
 
         // event handler
         this._handleStart = handleStart.bind(this);
