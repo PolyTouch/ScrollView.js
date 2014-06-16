@@ -155,11 +155,11 @@
             this.x = x;
             this.y = y;
 
-            console.log(x, y);
-            console.log(transform);
-
-            this.scroller.style['transitionTimingFunction'] = ease.transition;
-            this.scroller.style['transitionDuration'] = (time || 0) + 'ms';
+            this.scroller.style['transitionTimingFunction'] =
+            this.scroller.style['webkitTransitionTimingFunction'] = ease.transition;
+            this.scroller.style['transitionDuration'] =
+            this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
+            this.scroller.style['transform'] =
             this.scroller.style['webkitTransform'] = transform + translateZ;
         }
     };
