@@ -21,7 +21,7 @@
     // private functions
     function handleStart(ev) {
 
-        if (!this.enabled ||
+        if (!this._enabled ||
             this._curPointer) { // already scrolling by another pointer
             return;
         }
@@ -44,7 +44,7 @@
     }
 
     function handleMove(ev) {
-        if (!this.enabled ||
+        if (!this._enabled ||
             this._curPointer !== ev.pointerId) {
             return;
         }
@@ -85,13 +85,10 @@
                 deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
             ]
         });
-
-        // TRIGGER scroll
-        // calc scroll direction +-x and +-y
     }
 
     function handleEnd(ev) {
-        if (!this.enabled ||
+        if (!this._enabled ||
             this._curPointer !== ev.pointerId) {
             return;
         }
@@ -134,8 +131,7 @@
         this.scroller = this.view.children[0];
 
         this.options = {
-            startX: 0,
-            startY: 0,
+            start: [0, 0],
 
             scrollX: false,
             scrollY: true,
@@ -150,7 +146,7 @@
         };
 
         // define initial state
-        this.enabled = true;
+        this._enabled = true;
         this._curPointer = false;
 
         // event handler
@@ -161,14 +157,14 @@
         this.view.addEventListener('pointerdown', this._handleStart, false);
 
         // inital scroll
-        this.scrollTo(this.options.startX, this.options.startY);
+        this.scrollTo(this.options.start[0], this.options.start[1]);
     }
 
     ScrollView.prototype = {
         version: '0.0.0',
 
         enable: function (cond) {
-            this.enabled = cond === false ? cond : true;
+            this._enabled = cond === false ? cond : true;
         },
 
         destroy: function () {
