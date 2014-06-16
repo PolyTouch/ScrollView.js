@@ -19,7 +19,7 @@
     // private functions
     var start = function (ev) {
 
-        if (!this.enabled &&
+        if (!this.enabled ||
             this.isScrolling) { // already scrolling by another pointer
             return;
         }
@@ -46,13 +46,34 @@
     };
 
     var move = function (ev) {
-        // TRIGGER: scrollstart
+        if (!this.enabled ||
+            this.isScrolling !== ev.pointerId) {
+            return;
+        }
+
+        if (!this.hasMoved) {
+            // TRIGGER: scrollstart
+            this.hasMoved = true;
+        }
     };
 
     var end = function (ev) {
+        if (!this.enabled ||
+            this.isScrolling !== ev.pointerId) {
+            return;
+        }
+
         document.removeEventListener('pointerup', this._end, false);
         document.removeEventListener('pointercancel', this._end, false);
         document.removeEventListener('pointermove', this._move, false);
+
+        // reset state
+        this.isScrolling = null;
+
+        if (ev.type === 'pointercancel') {
+            // TRIGGER: scrollcancel
+        }
+        // TRIGGER: scrollend
     };
 
     function ScrollView (el, opt) {
@@ -71,8 +92,6 @@
         this.wrapper.addEventListener('pointerdown', this._start, false);
     }
 
-
-
     ScrollView.prototype = {
         version: '0.0.0',
 
@@ -90,8 +109,11 @@
 
         cancel: function (pointerId) {
 
-        }
-    }
+        },
 
+        scrollTo: function (x, y, time, easing) {
+
+        }
+    };
 
 }(this));
