@@ -11,7 +11,7 @@
             transition: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
         },
         bounce: {
-            transition: 'cubic-bezier(0.5, -0.5, 0.5, 1.5)'
+            transition: 'cubic-bezier(0, 0, 0.5, 1.5)'
         },
         elastic: {
 
@@ -43,14 +43,39 @@
         this.view.dispatchEvent(ev);
     }
 
-    function calculateVelocity(start, end, startTime, endTime) {
-        var velocity = Math.abs(end - start) / (endTime - startTime); // px/ms
+    function calculateDistance(start, end) {
+        return end - start;
+    }
+
+    function calculateVelocity(distance, startTime, endTime) {
+        var velocity = Math.abs(distance) / (endTime - startTime); // px/ms
 
         return velocity;
     }
 
-    function calculateMomentum() {
+    function calculateMomentum(current, distance, velocity, lowerMargin, wrapperSize, deceleration) {
+        var destination,
+            duration;
 
+        deceleration = deceleration === undefined ? 0.0006 : deceleration;
+
+        destination = current + ( velocity * velocity ) / ( 2 * deceleration ) * ( distance < 0 ? -1 : 1 );
+        duration = velocity / deceleration;
+
+        /*if ( destination < lowerMargin ) {
+            destination = wrapperSize ? lowerMargin - ( wrapperSize / 2.5 * ( speed / 8 ) ) : lowerMargin;
+            distance = Math.abs(destination - current);
+            duration = distance / speed;
+        } else if ( destination > 0 ) {
+            destination = wrapperSize ? wrapperSize / 2.5 * ( speed / 8 ) : 0;
+            distance = Math.abs(current) + destination;
+            duration = distance / speed;
+        }*/
+
+        return {
+            destination: Math.round(destination),
+            duration: duration
+        };
     }
 
     // private functions
@@ -139,25 +164,27 @@
             return;
         }
 
+        // reset state
+        this._curPointer = null;
+
         document.removeEventListener('pointerup', this._handleEnd, false);
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
 
-        // reset state
-        this._curPointer = null;
+        if (this._hasMoved) { // has never scrolled
+            return
+        }
 
         // TODO wait with eventing for transition
-        if (this._hasMoved) {
-            if (ev.type === 'pointercancel') {
-                triggerEvent.call(this, 'scrollcancel', {
-                    pointerId: this._curPointer
-                });
-            }
-
-            triggerEvent.call(this, 'scrollend', {
+        if (ev.type === 'pointercancel') {
+            triggerEvent.call(this, 'scrollcancel', {
                 pointerId: this._curPointer
             });
         }
+
+        triggerEvent.call(this, 'scrollend', {
+            pointerId: this._curPointer
+        });
     }
 
     function moveTo(x, y) {
@@ -187,9 +214,7 @@
 
             bounce: true,
             bounceTime: 600,
-            bounceEasing: '',
-
-            preventDefault: true
+            bounceEasing: ''
         };
 
         // define initial state
