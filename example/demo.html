@@ -76,6 +76,18 @@ elem.addEventListener('scrollstart', function (ev) {
     console.log(ev);
 }, false);
 
+elem.addEventListener('scrollcancel', function (ev) {
+    console.log(ev);
+}, false);
+
+elem.addEventListener('scrollend', function (ev) {
+    console.log(ev);
+}, false);
+
+elem.addEventListener('scroll', function (ev) {
+    console.log(ev.detail);
+}, false);
+
 </script>
 
 </body>

@@ -49,16 +49,16 @@
             return;
         }
 
-        var deltaX = ev.pageX - this._pointX,
-            deltaY = ev.pageY - this._pointY,
+        var deltaX = this.options.scrollX ? ev.pageX - this._pointX : 0,
+            deltaY = this.options.scrollY ? ev.pageY - this._pointY : 0,
             timestamp = new Date().getTime(),
             newX, newY;
 
         this._pointX = ev.pageX;
         this._pointY = ev.pageY;
 
-        newX = this.options.scrollX ? this.x + deltaX : this.x;
-        newY = this.options.scrollY ? this.y + deltaY : this.y;
+        newX = this.x + deltaX;
+        newY = this.y + deltaY;
 
         // TODO add WIGGLE_THRESHOLD
 
@@ -70,17 +70,21 @@
 
 
         if (!this._hasMoved) {
-            // TRIGGER: scrollstart
-            triggerEvent.call(this, 'scrollstart', {
-                direction: [
-                    deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0,
-                    deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
-                ]
-            });
             this._hasMoved = true;
+            triggerEvent.call(this, 'scrollstart', {
+                pointerId: this._curPointer
+            });
         }
 
         this.scrollTo(newX, newY);
+
+        triggerEvent.call(this, 'scroll', {
+            pointerId: this._curPointer,
+            direction: [
+                deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0,
+                deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
+            ]
+        });
 
         // TRIGGER scroll
         // calc scroll direction +-x and +-y
@@ -96,16 +100,20 @@
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
 
-        // reset state (wait for transition end)
+        // reset state
         this._curPointer = null;
 
-        // wait with eventing for transition
-        if (ev.type === 'pointercancel') {
-            // TRIGGER: scrollcancel
-        }
-
+        // TODO wait with eventing for transition
         if (this._hasMoved) {
-        // TRIGGER: scrollend
+            if (ev.type === 'pointercancel') {
+                triggerEvent.call(this, 'scrollcancel', {
+                    pointerId: this._curPointer
+                });
+            }
+
+            triggerEvent.call(this, 'scrollend', {
+                pointerId: this._curPointer
+            });
         }
     }
 
