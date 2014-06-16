@@ -32,6 +32,10 @@
         this._startTime = new Date().getTime();
         this._pointX = ev.pageX;
         this._pointY = ev.pageY;
+        this._boundaries = [
+            -this.view.scrollWidth + this.view.clientWidth,
+            -this.view.scrollHeight + this.view.clientHeight
+        ];
 
         // bind events
         document.addEventListener('pointerup', this._handleEnd, false);
@@ -57,6 +61,12 @@
         newY = this.options.scrollY ? this.y + deltaY : this.y;
 
         // TODO add WIGGLE_THRESHOLD
+
+        // consider boundaries
+        newX = newX > 0 ? 0 : newX; // lower
+        newY = newY > 0 ? 0 : newY; // lower
+        newX = newX < this._boundaries[0] ? this._boundaries[0] : newX;
+        newY = newY < this._boundaries[1] ? this._boundaries[1] : newY;
 
 
         if (!this._hasMoved) {
