@@ -29,9 +29,6 @@
         this.isScrolling = ev.pointerId; // lock for pointer
         this.hasMoved = false; // if scrolling has started
 
-        this.direction = [0, 0];
-        this.directionLocked = null;
-
         this.startTime = new Date().getTime();
         this.pointX = ev.pageX;
         this.pointY = ev.pageY;
@@ -56,10 +53,11 @@
         this.pointX = ev.pageX;
         this.pointY = ev.pageY;
 
-        newX = this.x + deltaX;
-        newY = this.y + deltaY;
+        newX = this.options.scrollX ? this.x + deltaX : this.x;
+        newY = this.options.scrollY ? this.y + deltaY : this.y;
 
         // TODO add WIGGLE_THRESHOLD
+
 
         if (!this.hasMoved) {
             // TRIGGER: scrollstart
@@ -68,6 +66,8 @@
 
         this.scrollTo(newX, newY);
 
+        // TRIGGER scroll
+        // calc scroll direction +-x and +-y
     };
 
     var handleEnd = function (ev) {
@@ -102,7 +102,6 @@
 
             scrollX: false,
             scrollY: true,
-            freeScroll: false,
 
             momentum: true,
 
