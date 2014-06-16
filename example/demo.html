@@ -68,7 +68,13 @@ body {
 </div>
 <script type="text/javascript">
 
+var elem = document.getElementById('wrapper');
+
 var myScroll = new ScrollView('#wrapper');
+
+elem.addEventListener('scrollstart', function (ev) {
+    console.log(ev);
+}, false);
 
 </script>
 

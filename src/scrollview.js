@@ -19,7 +19,7 @@
     };
 
     // private functions
-    var handleStart = function (ev) {
+    function handleStart(ev) {
 
         if (!this.enabled ||
             this._curPointer) { // already scrolling by another pointer
@@ -41,9 +41,9 @@
         document.addEventListener('pointerup', this._handleEnd, false);
         document.addEventListener('pointercancel', this._handleEnd, false);
         document.addEventListener('pointermove', this._handleMove, false);
-    };
+    }
 
-    var handleMove = function (ev) {
+    function handleMove(ev) {
         if (!this.enabled ||
             this._curPointer !== ev.pointerId) {
             return;
@@ -71,6 +71,12 @@
 
         if (!this._hasMoved) {
             // TRIGGER: scrollstart
+            triggerEvent.call(this, 'scrollstart', {
+                direction: [
+                    deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0,
+                    deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
+                ]
+            });
             this._hasMoved = true;
         }
 
@@ -78,9 +84,9 @@
 
         // TRIGGER scroll
         // calc scroll direction +-x and +-y
-    };
+    }
 
-    var handleEnd = function (ev) {
+    function handleEnd(ev) {
         if (!this.enabled ||
             this._curPointer !== ev.pointerId) {
             return;
@@ -101,7 +107,17 @@
         if (this._hasMoved) {
         // TRIGGER: scrollend
         }
-    };
+    }
+
+    function triggerEvent(type, data) {
+        var ev = new CustomEvent(type, {
+            detail: data || {},
+            bubbles: true,
+            cancelable: true
+        });
+
+        this.view.dispatchEvent(ev);
+    }
 
     function ScrollView (el, options) {
         var opt = options || {};
@@ -148,10 +164,6 @@
         },
 
         destroy: function () {
-
-        },
-
-        refresh: function () {
 
         },
 
