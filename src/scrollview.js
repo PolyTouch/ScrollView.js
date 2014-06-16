@@ -43,8 +43,10 @@
         this.view.dispatchEvent(ev);
     }
 
-    function calculateVelocity() {
+    function calculateVelocity(start, end, startTime, endTime) {
+        var velocity = Math.abs(end - start) / (endTime - startTime); // px/ms
 
+        return velocity;
     }
 
     function calculateMomentum() {
