@@ -137,10 +137,13 @@
             this._boundaries[1] :
             newY;
 
+        // initial move
         if (!this._hasMoved) {
             this._hasMoved = true;
             triggerEvent.call(this, 'scrollstart', {
-                pointerId: this._curPointer
+                pointerId: this._curPointer,
+                x: this.x,
+                y: this.y
             });
         }
 
@@ -160,7 +163,9 @@
             direction: [
                 deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0,
                 deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
-            ]
+            ],
+            x: newX,
+            y: newY
         });
     }
 
@@ -186,7 +191,6 @@
         }
 
         // start momentum animation if needed
-        if (this.options.momentum && duration < 300) {
             distance = [
                 calculateDistance(this._lastKeyFrame.x, this.x),
                 calculateDistance(this._lastKeyFrame.y, this.y)
@@ -213,10 +217,10 @@
         }
 
         if (newX != this.x || newY != this.y) {
-            /*this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+            this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
             this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
-            this.scrollTo(newX, newY, time);*/
+            this.scrollTo(newX, newY, time);
         } else {
             bounceBack.call(this);
         }
