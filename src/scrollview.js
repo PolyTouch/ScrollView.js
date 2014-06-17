@@ -16,21 +16,7 @@
         elastic: {
 
         }
-    }, ppcm = (function () {
-        var div = document.createElement('div');
-        div.style.width = '1cm';
-
-        var body = document.getElementsByTagName('body')[0];
-        body.appendChild(div);
-
-        var ppin = document.defaultView
-            .getComputedStyle(div, null)
-            .getPropertyValue('width');
-
-        body.removeChild(div);
-
-        return parseFloat(ppin);
-    }());
+    };
 
     // helpers
     function triggerEvent(type, data) {
@@ -47,56 +33,62 @@
         return end - start;
     }
 
-    function calculateVelocity(distance, startTime, endTime) {
-        var velocity = Math.abs(distance) / (endTime - startTime); // px/ms
+    function calculateVelocity(distance, duration) {
+        var velocity = Math.abs(distance) / duration; // px/ms
 
         return velocity;
     }
 
-    function calculateMomentum(current, distance, velocity, lowerMargin, wrapperSize, deceleration) {
+    function calculateMomentum(current, velocity, lower, upper, deceleration) {
         var destination,
             duration;
-
+        console.log(lower, upper);
         deceleration = deceleration === undefined ? 0.0006 : deceleration;
 
-        destination = current + ( velocity * velocity ) / ( 2 * deceleration ) * ( distance < 0 ? -1 : 1 );
-        duration = velocity / deceleration;
+        destination = current + (velocity * velocity) / (2 * deceleration);
 
-        /*if ( destination < lowerMargin ) {
-            destination = wrapperSize ? lowerMargin - ( wrapperSize / 2.5 * ( speed / 8 ) ) : lowerMargin;
-            distance = Math.abs(destination - current);
-            duration = distance / speed;
-        } else if ( destination > 0 ) {
-            destination = wrapperSize ? wrapperSize / 2.5 * ( speed / 8 ) : 0;
-            distance = Math.abs(current) + destination;
-            duration = distance / speed;
-        }*/
+        if (destination < lower) {
+            destination = lower;
+        } else if (destination > upper) {
+            destination = upper;
+        }
+
+        duration = velocity / deceleration;
 
         return {
             destination: Math.round(destination),
-            duration: duration
+            duration: parseFloat(duration)
         };
     }
 
     // private functions
     function handleStart(ev) {
 
-        if (!this._enabled ||
-            this._curPointer) { // already scrolling by another pointer
+        if (!this._enabled || this._curPointer) {
             return;
         }
 
+        var timestamp = new Date().getTime();
+
         this._curPointer = ev.pointerId; // lock for pointer
         this._hasMoved = false; // if scrolling has started
-        this._pointX = ev.pageX;
-        this._pointY = ev.pageY;
+
         this._boundaries = [
             -this.view.scrollWidth + this.view.clientWidth,
             -this.view.scrollHeight + this.view.clientHeight
         ];
-        this._lastKeyFrame = {
-            timestamp: new Date().getTime(),
+
+        // previous point for delta calculation
+        this._lastPoint = {
+            timestamp: timestamp,
             x: ev.pageX,
+            y: ev.pageY
+        };
+
+        // last key frame for velocity caluclation
+        this._lastKeyFrame = {
+            timestamp: timestamp,
+            x: this.x,
             y: ev.pageY
         };
 
@@ -107,18 +99,20 @@
     }
 
     function handleMove(ev) {
-        if (!this._enabled ||
-            this._curPointer !== ev.pointerId) {
+        if (!this._enabled || this._curPointer !== ev.pointerId) {
             return;
         }
 
-        var deltaX = this.options.scrollX ? ev.pageX - this._pointX : 0,
-            deltaY = this.options.scrollY ? ev.pageY - this._pointY : 0,
+        var deltaX = this.options.scrollX ? ev.pageX - this._lastPoint.x : 0,
+            deltaY = this.options.scrollY ? ev.pageY - this._lastPoint.y : 0,
             timestamp = new Date().getTime(),
             newX, newY;
 
-        this._pointX = ev.pageX;
-        this._pointY = ev.pageY;
+        this._lastPoint = {
+            timestamp: timestamp,
+            x: ev.pageX,
+            y: ev.pageY
+        };
 
         newX = this.x + deltaX;
         newY = this.y + deltaY;
@@ -142,8 +136,8 @@
         if (timestamp - this._lastKeyFrame.timestamp > 300) {
             this._lastKeyFrame = {
                 timestamp: timestamp,
-                x: ev.pageX,
-                y: ev.pageY
+                x: newX,
+                y: newY
             }
         }
 
@@ -164,6 +158,10 @@
             return;
         }
 
+        var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
+            distance, direction, velocity, momentum,
+            newX = this.x, newY = this.y, time;
+
         // reset state
         this._curPointer = null;
 
@@ -171,9 +169,40 @@
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
 
-        if (this._hasMoved) { // has never scrolled
+        if (!this._hasMoved) { // has never scrolled
             return
         }
+
+        // start momentum animation if needed
+        if (this.options.momentum && duration < 300) {
+            distance = [
+                calculateDistance(this._lastKeyFrame.x, this.x),
+                calculateDistance(this._lastKeyFrame.y, this.y)
+            ];
+
+            direction = [
+                distance[0] < 0 ? -1 : 1,
+                distance[1] < 0 ? -1 : 1
+            ];
+
+            velocity = [
+                calculateVelocity(distance[0], duration),
+                calculateVelocity(distance[1], duration)
+            ];
+
+            momentum = [
+                calculateMomentum(this.x, velocity[0], this._boundaries[0], 0),
+                calculateMomentum(this.y, velocity[1], this._boundaries[1], 0)
+            ];
+
+            console.log(momentum);
+
+            newX = momentum[0].destination;
+            newY = momentum[1].destination;
+            time = Math.max(momentum[0].duration, momentum[1].duration);
+        }
+
+
 
         // TODO wait with eventing for transition
         if (ev.type === 'pointercancel') {
