@@ -120,10 +120,22 @@
         // TODO add WIGGLE_THRESHOLD
 
         // consider boundaries
-        newX = newX > 0 ? 0 : newX; // lower
-        newY = newY > 0 ? 0 : newY; // lower
-        newX = newX < this._boundaries[0] ? this._boundaries[0] : newX;
-        newY = newY < this._boundaries[1] ? this._boundaries[1] : newY;
+        newX = newX > 0 ? // upper
+            this.options.bounce ? this.x + deltaX / 3 :
+            0 :
+            newX;
+        newY = newY > 0 ? // upper
+            this.options.bounce ? this.y + deltaY / 3 :
+            0 :
+            newY;
+        newX = newX < this._boundaries[0] ? // lower
+            this.options.bounce ? this.x + deltaX / 3 :
+            this._boundaries[0] :
+            newX;
+        newY = newY < this._boundaries[1] ? // lower
+            this.options.bounce ? this.y + deltaY / 3 :
+            this._boundaries[1] :
+            newY;
 
         if (!this._hasMoved) {
             this._hasMoved = true;
@@ -194,8 +206,6 @@
                 calculateMomentum(this.x, velocity[0], this._boundaries[0], 0),
                 calculateMomentum(this.y, velocity[1], this._boundaries[1], 0)
             ];
-
-            console.log(momentum);
 
             newX = momentum[0].destination;
             newY = momentum[1].destination;
