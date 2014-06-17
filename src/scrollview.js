@@ -92,6 +92,9 @@
             y: ev.pageY
         };
 
+        // make sure it is not moving
+        moveTo.apply(this, getCurrentPosition.call(this));
+
         // bind events
         document.addEventListener('pointerup', this._handleEnd, false);
         document.addEventListener('pointercancel', this._handleEnd, false);
@@ -246,6 +249,17 @@
         this.scroller.removeEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
         bounceBack.call(this);
+    }
+
+    function getCurrentPosition() {
+        var style = window.getComputedStyle(this.scroller, null),
+            x, y;
+
+        style = (style['transform'] || style['webkitTransform']).split(')')[0].split(', ');
+        x = +(style[12] || style[4]);
+        y = +(style[13] || style[5]);
+
+        return [x, y];
     }
 
     function moveTo(x, y) {
