@@ -212,7 +212,15 @@
             time = Math.max(momentum[0].duration, momentum[1].duration);
         }
 
+        if (newX != this.x || newY != this.y) {
+            // change easing function when scroller goes out of the boundaries
+            /*if ( newX > 0 || newX < this.maxScrollX || newY > 0 || newY < this.maxScrollY ) {
+                easing = utils.ease.quadratic;
+            }*/
 
+            //this.scrollTo(newX, newY, time);
+            //return;
+        }
 
         // TODO wait with eventing for transition
         if (ev.type === 'pointercancel') {
@@ -224,6 +232,20 @@
         triggerEvent.call(this, 'scrollend', {
             pointerId: this._curPointer
         });
+    }
+
+    function handleTransitionEnd(ev) {
+
+        var newX = this.x > 0 ? 0 :
+            this.x < this._boundaries[0] ? this._boundaries[0] :
+            this.x,
+            newY = this.y > 0 ? 0 :
+            this.y < this._boundaries[1] ? this._boundaries[1] :
+            this.y;
+
+        if (this.options.bounce) {
+            this.scrollTo(newX, newY, this.options.bounceTime, this.options.bounceEasing);
+        }
     }
 
     function moveTo(x, y) {
@@ -253,7 +275,7 @@
 
             bounce: true,
             bounceTime: 600,
-            bounceEasing: ''
+            bounceEasing: null
         };
 
         // define initial state
@@ -264,6 +286,7 @@
         this._handleStart = handleStart.bind(this);
         this._handleMove = handleMove.bind(this);
         this._handleEnd = handleEnd.bind(this);
+        this._handleTransitionEnd = handleTransitionEnd.bind(this);
 
         this.view.addEventListener('pointerdown', this._handleStart, false);
 
