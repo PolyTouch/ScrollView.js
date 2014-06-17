@@ -42,7 +42,7 @@
     function calculateMomentum(current, velocity, lower, upper, deceleration) {
         var destination,
             duration;
-        console.log(lower, upper);
+
         deceleration = deceleration === undefined ? 0.0006 : deceleration;
 
         destination = current + (velocity * velocity) / (2 * deceleration);
@@ -222,6 +222,11 @@
             //return;
         }
 
+        this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+        this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
+
+        this.scrollTo(newX, newY, time);
+
         // TODO wait with eventing for transition
         if (ev.type === 'pointercancel') {
             triggerEvent.call(this, 'scrollcancel', {
@@ -235,17 +240,9 @@
     }
 
     function handleTransitionEnd(ev) {
+        this.scroller.removeEventListener('transitionEnd', this._handleTransitionEnd, false);
+        this.scroller.removeEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
-        var newX = this.x > 0 ? 0 :
-            this.x < this._boundaries[0] ? this._boundaries[0] :
-            this.x,
-            newY = this.y > 0 ? 0 :
-            this.y < this._boundaries[1] ? this._boundaries[1] :
-            this.y;
-
-        if (this.options.bounce) {
-            this.scrollTo(newX, newY, this.options.bounceTime, this.options.bounceEasing);
-        }
     }
 
     function moveTo(x, y) {
@@ -257,6 +254,19 @@
 
         this.scroller.style['transform'] =
         this.scroller.style['webkitTransform'] = transform + translateZ;
+    }
+
+    function bounceBack() {
+        var newX = this.x > 0 ? 0 :
+            this.x < this._boundaries[0] ? this._boundaries[0] :
+            this.x,
+            newY = this.y > 0 ? 0 :
+            this.y < this._boundaries[1] ? this._boundaries[1] :
+            this.y;
+
+        if (this.options.bounce) {
+            this.scrollTo(newX, newY, this.options.bounceTime, this.options.bounceEasing);
+        }
     }
 
     function ScrollView (el, options) {
