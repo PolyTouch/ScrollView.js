@@ -213,19 +213,13 @@
         }
 
         if (newX != this.x || newY != this.y) {
-            // change easing function when scroller goes out of the boundaries
-            /*if ( newX > 0 || newX < this.maxScrollX || newY > 0 || newY < this.maxScrollY ) {
-                easing = utils.ease.quadratic;
-            }*/
+            /*this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+            this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
-            //this.scrollTo(newX, newY, time);
-            //return;
+            this.scrollTo(newX, newY, time);*/
+        } else {
+            bounceBack.call(this);
         }
-
-        this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
-        this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
-
-        this.scrollTo(newX, newY, time);
 
         // TODO wait with eventing for transition
         if (ev.type === 'pointercancel') {
@@ -243,6 +237,7 @@
         this.scroller.removeEventListener('transitionEnd', this._handleTransitionEnd, false);
         this.scroller.removeEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
+        bounceBack.call(this);
     }
 
     function moveTo(x, y) {
