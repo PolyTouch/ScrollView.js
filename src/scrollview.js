@@ -39,13 +39,13 @@
         return velocity;
     }
 
-    function calculateMomentum(current, velocity, lower, upper, deceleration) {
+    function calculateMomentum(current, direction, velocity, lower, upper, deceleration) {
         var destination,
             duration;
 
         deceleration = deceleration === undefined ? 0.0006 : deceleration;
 
-        destination = current + (velocity * velocity) / (2 * deceleration);
+        destination = current + (velocity * velocity) / (2 * deceleration) * direction;
 
         if (destination < lower) {
             destination = lower;
@@ -103,8 +103,8 @@
             return;
         }
 
-        var deltaX = this.options.scrollX ? ev.pageX - this._lastPoint.x : 0,
-            deltaY = this.options.scrollY ? ev.pageY - this._lastPoint.y : 0,
+        var deltaX = this.options.scrollX ? calculateDistance(this._lastPoint.x, ev.pageX) : 0,
+            deltaY = this.options.scrollY ? calculateDistance(this._lastPoint.y, ev.pageY) : 0,
             timestamp = new Date().getTime(),
             newX, newY;
 
@@ -176,8 +176,11 @@
         }
 
         var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
-            distance, direction, velocity, momentum,
-            newX = this.x, newY = this.y, time;
+            deltaX = this.options.scrollX ? calculateDistance(this._lastPoint.x, ev.pageX) : 0,
+            deltaY = this.options.scrollY ? calculateDistance(this._lastPoint.y, ev.pageY) : 0,
+            distance, velocity, momentum, time,
+            newX = this.x + deltaX,
+            newY = this.y + deltaY;
 
         // reset state
         this._curPointer = null;
@@ -191,6 +194,7 @@
         }
 
         // start momentum animation if needed
+        if (this.options.momentum && duration < 300) {
             distance = [
                 calculateDistance(this._lastKeyFrame.x, this.x),
                 calculateDistance(this._lastKeyFrame.y, this.y)
@@ -207,8 +211,8 @@
             ];
 
             momentum = [
-                calculateMomentum(this.x, velocity[0], this._boundaries[0], 0),
-                calculateMomentum(this.y, velocity[1], this._boundaries[1], 0)
+                calculateMomentum(this.x, direction[0], velocity[0], this._boundaries[0], 0),
+                calculateMomentum(this.y, direction[1], velocity[1], this._boundaries[1], 0)
             ];
 
             newX = momentum[0].destination;
