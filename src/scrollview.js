@@ -40,20 +40,21 @@
     }
 
     function calculateMomentum(current, direction, velocity, lower, upper, deceleration) {
-        var destination,
-            duration;
+        var destination, duration, distance;
 
-        deceleration = deceleration === undefined ? 0.0006 : deceleration;
-
+        deceleration = deceleration || 0.0006;
         destination = current + (velocity * velocity) / (2 * deceleration) * direction;
+        duration = velocity / deceleration;
 
         if (destination < lower) {
-            destination = lower;
+            destination = upper ? lower - (upper / 2.5 * velocity / 8) : lower;
+            distance = Math.abs(destination - current);
+            duration = distance / velocity;
         } else if (destination > upper) {
-            destination = upper;
+            destination = upper ? upper / 2.5 * velocity / 8 : upper;
+            distance = Math.abs(current) + destination;
+            duration = distance / velocity;
         }
-
-        duration = velocity / deceleration;
 
         return {
             destination: Math.round(destination),
