@@ -118,7 +118,11 @@
         },
 
         cancel: function (pointerId) {
+            if (pointerId && this._curPointer && this._curPointer !== pointerId) {
+                return;
+            }
 
+            this._curPointer = null;
         },
 
         scrollTo: function (x, y, time, easing) {
@@ -145,7 +149,7 @@
             this._getBoundaries();
 
             // make sure it is not moving anymore
-            this._transform.apply(this, this._getTransformPosition() || [0, 0]);
+            this._forceTransitionEnd();
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -339,6 +343,11 @@
             }
         },
 
+        _forceTransitionEnd: function () {
+            this._observePosition(false);
+            this._transform.apply(this, this._getTransformPosition() || [0, 0]);
+        },
+
         _transform: function (x, y) {
             this.x = Math.round(x);
             this.y = Math.round(y);
@@ -355,10 +364,10 @@
                 match;
 
             match = (style['transform'] || style['webkitTransform'])
-                .match(/matrix\( *([0-9]+)px\ *, *([0-9]+)px *\)/);
+                .match(/matrix\( *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *\)/);
 
             if (match) {
-                return [x, y];
+                return [Math.round(match[5]), Math.round(match[6])];
             }
 
             return null;
@@ -369,7 +378,16 @@
                 -this.view.scrollWidth + this.view.clientWidth,
                 -this.view.scrollHeight + this.view.clientHeight
             ];
-        }
+        },
+
+        _observePosition: function (cond) {
+            if (cond === false) {
+                (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
+            } else {
+                //this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)()
+            }
+
+        },
 
 
     };
