@@ -1,4 +1,4 @@
-(function (window) {
+(function (global) {
 
     var easingFn = {
         quadratic: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -401,6 +401,6 @@
 
     };
 
-    window.ScrollView = Sv;
+    global.ScrollView = Sv;
 
-}(this));
+}(window.polyTouch || window));
