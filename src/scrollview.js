@@ -80,19 +80,6 @@
         this.scroller.style['webkitTransform'] = transform + translateZ;
     }
 
-    function bounceBack() {
-        var newX = this.x > 0 ? 0 :
-            this.x < this._boundaries[0] ? this._boundaries[0] :
-            this.x,
-            newY = this.y > 0 ? 0 :
-            this.y < this._boundaries[1] ? this._boundaries[1] :
-            this.y;
-
-        if (this.options.bounce) {
-            this.scrollTo(newX, newY, this.options.bounceTime);
-        }
-    }
-
     function Sv(el, options) {
         var opt = options || {};
 
@@ -308,6 +295,7 @@
                     math.velocity(distance[1], duration)
                 ];
 
+                // TODO add bounce spacing
                 inertia = [ //inertia
                     math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
                     math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
@@ -326,7 +314,7 @@
 
                 this.scrollTo(newX, newY, time);
             } else {
-                bounceBack.call(this);
+                this._startBounceTransition();
             }
 
             // TODO wait with eventing for transition
@@ -345,7 +333,21 @@
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
-            bounceBack.call(this);
+            this._startBounceTransition();
+        },
+
+        _startBounceTransition: function () {
+            var newX = this.x > 0 ? 0 :
+                this.x < this._boundaries[0] ? this._boundaries[0] :
+                this.x,
+                newY = this.y > 0 ? 0 :
+                this.y < this._boundaries[1] ? this._boundaries[1] :
+                this.y;
+
+            if (this.options.bounce) {
+                // todo attach rAF to surveille computed style
+                this.scrollTo(newX, newY, this.options.bounceTime);
+            }
         }
 
 
