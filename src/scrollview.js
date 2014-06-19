@@ -298,23 +298,22 @@
         }
     }
 
-    function ScrollView (el, options) {
+    function Sv(el, options) {
         var opt = options || {};
 
         this.view = typeof el === 'string' ? document.querySelector(el) : el;
         this.scroller = this.view.children[0];
 
         this.options = {
-            start: [0, 0],
+            start: opt.start || [0, 0],
 
-            scrollX: false,
-            scrollY: true,
+            scrollX: opt.scrollX || false,
+            scrollY: opt.scrollY || true,
 
-            momentum: true,
+            momentum: opt.momentum || true,
 
-            bounce: true,
-            bounceTime: 600,
-            bounceEasing: null
+            bounce: opt.bounce || true,
+            bounceTime: opt.bounceTime || 600
         };
 
         // define initial state
@@ -333,7 +332,7 @@
         this.scrollTo(this.options.start[0], this.options.start[1]);
     }
 
-    ScrollView.prototype = {
+    Sv.prototype = {
         version: '0.0.0',
 
         enable: function (cond) {
@@ -360,6 +359,6 @@
         }
     };
 
-    window.ScrollView = ScrollView;
+    window.ScrollView = Sv;
 
 }(this));
