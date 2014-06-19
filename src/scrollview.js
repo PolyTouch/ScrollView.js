@@ -1,18 +1,8 @@
 (function (window) {
 
     var easingFn = {
-        quadratic: {
-            transition: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        },
-        circular: {
-            transition: 'cubic-bezier(0.1, 0.57, 0.1, 1)'
-        },
-        back: {
-            transition: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-        },
-        bounce: {
-            transition: 'cubic-bezier(0,0,.5,1.2)'
-        }
+        quadratic: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        circular: 'cubic-bezier(0.1, 0.57, 0.1, 1)'
     };
 
     // helpers
@@ -130,7 +120,7 @@
             var ease = easing || easingFn.circular;
 
             this.scroller.style['transitionTimingFunction'] =
-            this.scroller.style['webkitTransitionTimingFunction'] = ease.transition;
+            this.scroller.style['webkitTransitionTimingFunction'] = ease;
             this.scroller.style['transitionDuration'] =
             this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
 
