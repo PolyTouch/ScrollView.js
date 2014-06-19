@@ -39,8 +39,6 @@
     function calculateMomentum(current, direction, velocity, lower, upper, deceleration) {
         var destination, duration, distance;
 
-        console.log(arguments);
-
         deceleration = deceleration || 0.0006;
 
         duration = velocity / deceleration;
@@ -202,7 +200,6 @@
         document.removeEventListener('pointerup', this._handleEnd, false);
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
-        console.log('end', newX, newY);
         this.scrollTo(newX, newY);
 
         if (!this._hasMoved) { // has never scrolled
@@ -295,8 +292,6 @@
             newY = this.y > 0 ? 0 :
             this.y < this._boundaries[1] ? this._boundaries[1] :
             this.y;
-
-        console.log('bounce', newX, newY);
 
         if (this.options.bounce) {
             this.scrollTo(newX, newY, this.options.bounceTime);
