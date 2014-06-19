@@ -47,21 +47,6 @@
         elem.dispatchEvent(ev);
     }
 
-    function getCurrentPosition() {
-        var style = window.getComputedStyle(this.scroller, null),
-            match,
-            x, y;
-        console.log(style['transform'] || style['webkitTransform']);
-        style = (style['transform'] || style['webkitTransform']).match(/matrix\( *([0-9]+)px\ *, *([0-9]+)px *\)/);
-
-        style = (style['transform'] || style['webkitTransform']).split(')')[0].split(', ');
-        x = +(style[12] || style[4]);
-        y = +(style[13] || style[5]);
-
-        console.log(x, y);
-        return [x, y];
-    }
-
     function Sv(el, options) {
         var opt = options || {};
 
@@ -280,8 +265,7 @@
                     this.options.bounce ? 0 + this.view.clientHeight / 2 : 0
                 ];
 
-                // TODO add bounce spacing
-                inertia = [ //inertia
+                inertia = [
                     math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2]),
                     math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3])
                 ];
@@ -298,7 +282,7 @@
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
                 this._observePosition();
-                console.log('momentum', newX, newY, time);
+
                 this.scrollTo(newX, newY, time);
             } else {
                 this._startBounceTransition();
@@ -320,7 +304,7 @@
                 newY = this.y > 0 ? 0 :
                 this.y < this._boundaries[1] ? this._boundaries[1] :
                 this.y;
-            console.log('bounce');
+
             if (this.options.bounce) {
                 this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
