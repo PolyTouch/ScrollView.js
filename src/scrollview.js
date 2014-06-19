@@ -283,7 +283,9 @@
 
                 this._observePosition();
 
-                this.scrollTo(newX, newY, time);
+                this.scrollTo(newX, newY, time,
+                        newX > 0 || newX < this._boundaries[0] ||
+                        newY > 0 || newY < this._boundaries[1] ? easingFn.quadratic : null);
             } else {
                 this._startBounceTransition();
             }
