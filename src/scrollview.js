@@ -58,17 +58,6 @@
         this.view.dispatchEvent(ev);
     }
 
-
-
-
-
-    function handleTransitionEnd(ev) {
-        this.scroller.removeEventListener('transitionEnd', this._handleTransitionEnd, false);
-        this.scroller.removeEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
-
-        bounceBack.call(this);
-    }
-
     function getCurrentPosition() {
         var style = window.getComputedStyle(this.scroller, null),
             x, y;
@@ -130,7 +119,7 @@
         this._handleStart = this._handleStart.bind(this);
         this._handleMove = this._handleMove.bind(this);
         this._handleEnd = this._handleEnd.bind(this);
-        this._handleTransitionEnd = handleTransitionEnd.bind(this);
+        this._handleInertiaEnd = this._handleInertiaEnd.bind(this);
 
         this.view.addEventListener('pointerdown', this._handleStart, false);
 
@@ -332,8 +321,8 @@
             if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
                 this.y <= 0 && this.y >= this._boundaries[1] &&
                 (newX != this.x || newY != this.y)) {
-                this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
-                this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
+                this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
+                this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
                 this.scrollTo(newX, newY, time);
             } else {
@@ -350,6 +339,13 @@
             triggerEvent.call(this, 'scrollend', {
                 pointerId: this._curPointer
             });
+        },
+
+        _handleInertiaEnd: function (ev) {
+            this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
+            this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
+
+            bounceBack.call(this);
         }
 
 
