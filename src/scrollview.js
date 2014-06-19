@@ -9,12 +9,6 @@
         },
         back: {
             transition: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-        },
-        bounce: {
-            transition: 'cubic-bezier(0, 0, 0.5, 1.5)'
-        },
-        elastic: {
-
         }
     };
 
@@ -42,9 +36,14 @@
     function calculateMomentum(current, direction, velocity, lower, upper, deceleration) {
         var destination, duration, distance;
 
+        console.log(arguments);
+
         deceleration = deceleration || 0.0006;
-        destination = current + (velocity * velocity) / (2 * deceleration) * direction;
+
         duration = velocity / deceleration;
+        destination = current + (velocity * duration * /* time */ 0.5 * deceleration * duration * direction);
+
+        //destination = current + (velocity * velocity) / (2 * deceleration) * direction;
 
         if (destination < lower) {
             destination = upper ? lower - (upper / 2.5 * velocity / 8) : lower;
@@ -79,6 +78,9 @@
             -this.view.scrollHeight + this.view.clientHeight
         ];
 
+        // make sure it is not moving
+        moveTo.apply(this, getCurrentPosition.call(this));
+
         // previous point for delta calculation
         this._lastPoint = {
             timestamp: timestamp,
@@ -90,11 +92,8 @@
         this._lastKeyFrame = {
             timestamp: timestamp,
             x: this.x,
-            y: ev.pageY
+            y: this.y
         };
-
-        // make sure it is not moving
-        moveTo.apply(this, getCurrentPosition.call(this));
 
         // bind events
         document.addEventListener('pointerup', this._handleEnd, false);
@@ -122,6 +121,10 @@
         newY = this.y + deltaY;
 
         // TODO add WIGGLE_THRESHOLD
+        // We need to move at least 10 pixels for the scrolling to initiate
+        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+            return;
+        }
 
         // consider boundaries
         newX = newX > 0 ? // upper
@@ -165,8 +168,8 @@
         triggerEvent.call(this, 'scroll', {
             pointerId: this._curPointer,
             direction: [
-                deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0,
-                deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0
+                deltaX < 0 ? -1 : deltaX > 0 ? 1 : 0,
+                deltaY < 0 ? -1 : deltaY > 0 ? 1 : 0
             ],
             x: newX,
             y: newY
@@ -193,6 +196,8 @@
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
 
+        this.scrollTo(newX, newY);
+
         if (!this._hasMoved) { // has never scrolled
             return
         }
@@ -205,28 +210,28 @@
             ];
 
             direction = [
-                distance[0] < 0 ? -1 : 1,
-                distance[1] < 0 ? -1 : 1
+                distance[0] < 0 ? -1 : distance[0] > 0 ? 1 : 0,
+                distance[1] < 0 ? -1 : distance[1] > 0 ? 1 : 0
             ];
 
             velocity = [
                 calculateVelocity(distance[0], duration),
                 calculateVelocity(distance[1], duration)
             ];
-
-            momentum = [
+            console.log(this._boundaries);
+            momentum = [ //inertia
                 calculateMomentum(this.x, direction[0], velocity[0], this._boundaries[0], 0),
                 calculateMomentum(this.y, direction[1], velocity[1], this._boundaries[1], 0)
             ];
-
+            console.log(newX, newY, momentum);
             newX = momentum[0].destination;
             newY = momentum[1].destination;
             time = Math.max(momentum[0].duration, momentum[1].duration);
         }
 
         if (newX != this.x || newY != this.y) {
-            this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
-            this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
+            //this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+            //this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
             this.scrollTo(newX, newY, time);
         } else {
@@ -264,11 +269,11 @@
     }
 
     function moveTo(x, y) {
-        var transform = 'translate(' + x + 'px,' + y + 'px)',
-            translateZ = ' translateZ(0)';
+        this.x = Math.round(x);
+        this.y = Math.round(y);
 
-        this.x = x;
-        this.y = y;
+        var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
+            translateZ = ' translateZ(0)';
 
         this.scroller.style['transform'] =
         this.scroller.style['webkitTransform'] = transform + translateZ;
