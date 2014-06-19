@@ -99,6 +99,7 @@
         this._handleMove = this._handleMove.bind(this);
         this._handleEnd = this._handleEnd.bind(this);
         this._handleInertiaEnd = this._handleInertiaEnd.bind(this);
+        this._handleBounceTransitionEnd = this._handleBounceTransitionEnd.bind(this);
 
         this.view.addEventListener('pointerdown', this._handleStart, false);
 
@@ -301,6 +302,8 @@
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
+                this._observePosition();
+
                 this.scrollTo(newX, newY, time);
             } else {
                 this._startBounceTransition();
@@ -322,6 +325,7 @@
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
+            this._observePosition(false);
             this._startBounceTransition();
         },
 
@@ -334,13 +338,26 @@
                 this.y;
 
             if (this.options.bounce) {
-                // todo attach rAF to surveille computed style
+                this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+                this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
+                this._observePosition();
+
                 this.scrollTo(newX, newY, this.options.bounceTime);
             }
         },
 
+        _handleBounceTransitionEnd: function (ev) {
+            this._observePosition(false);
+            this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+            this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
+        },
+
         _forceTransitionEnd: function () {
             this._observePosition(false);
+            this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
+            this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
+            this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+            this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
         },
 
@@ -377,22 +394,27 @@
         },
 
         _observePosition: function (cond) {
+            var obeservationLoop, lastPos = this._getTransformPosition();
+
             if (cond === false) {
                 (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
             } else {
-                var sendScrollEventLoop = function () {
+                obeservationLoop = function () {
                     var pos = this._getTransformPosition();
 
-                    triggerEvent(this.view, 'scroll', {
-                        pointerId: this._curPointer,
-                        x: pos[0],
-                        y: pos[1]
-                    });
+                    if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
+                        triggerEvent(this.view, 'scroll', {
+                            pointerId: this._curPointer,
+                            x: pos[0],
+                            y: pos[1]
+                        });
+                    }
+                    lastPos = pos;
 
-                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(sendScrollEvent.bind(this));
+                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
                 };
 
-                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(sendScrollEvent.bind(this))
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this))
             }
 
         },
