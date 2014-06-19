@@ -30,14 +30,14 @@
             var destination, duration,
                 t, a = deceleration || 0.0006;
 
-            t = velocity / deceleration; // a = v / t
-            destination = current + (velocity * (t * t) * 0.5 * deceleration * direction);
+            t = velocity / a; // a = v / t
+            destination = current + (velocity * (t * t) * 0.5 * a * direction);
 
             if (destination < lower || destination > upper) {
                 destination = destination < lower ? lower :
                     destination > upper ? upper :
                     destination;
-                t = Math.sqrt(Math.abs(destination - current) / (velocity * 0.5 * deceleration * direction));
+                t = Math.sqrt(Math.abs(destination - current) / (velocity * 0.5 * a * direction));
             }
 
             return {
@@ -56,46 +56,6 @@
         });
 
         this.view.dispatchEvent(ev);
-    }
-
-    // private functions
-    function handleStart(ev) {
-
-        if (!this._enabled || this._curPointer) {
-            return;
-        }
-
-        var timestamp = new Date().getTime();
-
-        this._curPointer = ev.pointerId; // lock for pointer
-        this._hasMoved = false; // if scrolling has started
-
-        this._boundaries = [
-            -this.view.scrollWidth + this.view.clientWidth,
-            -this.view.scrollHeight + this.view.clientHeight
-        ];
-
-        // make sure it is not moving
-        moveTo.apply(this, getCurrentPosition.call(this));
-
-        // previous point for delta calculation
-        this._lastPoint = {
-            timestamp: timestamp,
-            x: ev.pageX,
-            y: ev.pageY
-        };
-
-        // last key frame for velocity caluclation
-        this._lastKeyFrame = {
-            timestamp: timestamp,
-            x: this.x,
-            y: this.y
-        };
-
-        // bind events
-        document.addEventListener('pointerup', this._handleEnd, false);
-        document.addEventListener('pointercancel', this._handleEnd, false);
-        document.addEventListener('pointermove', this._handleMove, false);
     }
 
     function handleMove(ev) {
@@ -182,7 +142,7 @@
         var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
             deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
             deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
-            distance, velocity, momentum, time,
+            distance, velocity, inertia, time,
             newX = this.x + deltaX,
             newY = this.y + deltaY;
 
@@ -199,7 +159,7 @@
         }
 
         // start momentum animation if needed
-        if (this.options.momentum && duration < 300) {
+        if (this.options.inertia && duration < 300) {
             distance = [
                 math.distance(this._lastKeyFrame.x, this.x),
                 math.distance(this._lastKeyFrame.y, this.y)
@@ -215,14 +175,15 @@
                 math.velocity(distance[1], duration)
             ];
 
-            momentum = [ //inertia
+            inertia = [ //inertia
                 math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
                 math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
             ];
 
-            newX = momentum[0].destination;
-            newY = momentum[1].destination;
-            time = Math.max(momentum[0].duration, momentum[1].duration);
+            newX = inertia[0].destination;
+            newY = inertia[1].destination;
+            time = Math.max(inertia[0].duration, inertia[1].duration);
+            console.log(newY);
         }
 
         if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
@@ -302,7 +263,7 @@
             scrollX: opt.scrollX || false,
             scrollY: opt.scrollY || true,
 
-            momentum: opt.momentum || true,
+            inertia: opt.inertia || true,
 
             bounce: opt.bounce || true,
             bounceTime: opt.bounceTime || 600
@@ -313,7 +274,7 @@
         this._curPointer = false;
 
         // event handler
-        this._handleStart = handleStart.bind(this);
+        this._handleStart = this._handleStart.bind(this);
         this._handleMove = handleMove.bind(this);
         this._handleEnd = handleEnd.bind(this);
         this._handleTransitionEnd = handleTransitionEnd.bind(this);
@@ -349,6 +310,44 @@
 
             moveTo.call(this, x, y);
         },
+
+        _handleStart: function (ev) {
+            if (!this._enabled || this._curPointer) {
+                return;
+            }
+
+            var timestamp = new Date().getTime();
+
+            this._curPointer = ev.pointerId; // lock for pointer
+            this._hasMoved = false;
+
+            this._boundaries = [ // negative numbers because we scroll negative
+                -this.view.scrollWidth + this.view.clientWidth,
+                -this.view.scrollHeight + this.view.clientHeight
+            ];
+
+            // make sure it is not moving anymore
+            moveTo.apply(this, getCurrentPosition.call(this));
+
+            // previous point for delta calculation
+            this._lastPoint = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            };
+
+            // last key frame for velocity caluclation
+            this._lastKeyFrame = {
+                timestamp: timestamp,
+                x: this.x,
+                y: this.y
+            };
+
+            // bind events
+            document.addEventListener('pointerup', this._handleEnd, false);
+            document.addEventListener('pointercancel', this._handleEnd, false);
+            document.addEventListener('pointermove', this._handleMove, false);
+        }
 
 
     };
