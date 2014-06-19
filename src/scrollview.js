@@ -236,8 +236,8 @@
             time = Math.max(momentum[0].duration, momentum[1].duration);
         }
 
-        if (this.x < 0 && this.x > this._boundaries[0] && // not already in bouncing state
-            this.y < 0 && this.y > this._boundaries[1] &&
+        if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
+            this.y <= 0 && this.y >= this._boundaries[1] &&
             (newX != this.x || newY != this.y)) {
             this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
             this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
