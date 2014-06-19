@@ -202,7 +202,7 @@
         document.removeEventListener('pointerup', this._handleEnd, false);
         document.removeEventListener('pointercancel', this._handleEnd, false);
         document.removeEventListener('pointermove', this._handleMove, false);
-
+        console.log('end', newX, newY);
         this.scrollTo(newX, newY);
 
         if (!this._hasMoved) { // has never scrolled
@@ -225,18 +225,20 @@
                 calculateVelocity(distance[0], duration),
                 calculateVelocity(distance[1], duration)
             ];
-            console.log(this._boundaries);
+
             momentum = [ //inertia
                 calculateMomentum(this.x, direction[0], velocity[0], this._boundaries[0], 0),
                 calculateMomentum(this.y, direction[1], velocity[1], this._boundaries[1], 0)
             ];
-            console.log(newX, newY, momentum);
+
             newX = momentum[0].destination;
             newY = momentum[1].destination;
             time = Math.max(momentum[0].duration, momentum[1].duration);
         }
 
-        if (newX != this.x || newY != this.y) {
+        if (this.x < 0 && this.x > this._boundaries[0] && // not already in bouncing state
+            this.y < 0 && this.y > this._boundaries[1] &&
+            (newX != this.x || newY != this.y)) {
             this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
             this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
@@ -294,8 +296,10 @@
             this.y < this._boundaries[1] ? this._boundaries[1] :
             this.y;
 
+        console.log('bounce', newX, newY);
+
         if (this.options.bounce) {
-            this.scrollTo(newX, newY, this.options.bounceTime, this.options.bounceEasing);
+            this.scrollTo(newX, newY, this.options.bounceTime);
         }
     }
 
