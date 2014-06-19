@@ -237,10 +237,6 @@
 
             triggerEvent(this.view, 'scroll', {
                 pointerId: this._curPointer,
-                direction: [
-                    math.direction(deltaX),
-                    math.direction(deltaY)
-                ],
                 x: newX,
                 y: newY
             });
@@ -384,7 +380,19 @@
             if (cond === false) {
                 (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
             } else {
-                //this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)()
+                var sendScrollEventLoop = function () {
+                    var pos = this._getTransformPosition();
+
+                    triggerEvent(this.view, 'scroll', {
+                        pointerId: this._curPointer,
+                        x: pos[0],
+                        y: pos[1]
+                    });
+
+                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(sendScrollEvent.bind(this));
+                };
+
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(sendScrollEvent.bind(this))
             }
 
         },
