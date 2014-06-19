@@ -69,17 +69,6 @@
         return [x, y];
     }
 
-    function moveTo(x, y) {
-        this.x = Math.round(x);
-        this.y = Math.round(y);
-
-        var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
-            translateZ = ' translateZ(0)';
-
-        this.scroller.style['transform'] =
-        this.scroller.style['webkitTransform'] = transform + translateZ;
-    }
-
     function Sv(el, options) {
         var opt = options || {};
 
@@ -137,7 +126,7 @@
             this.scroller.style['transitionDuration'] =
             this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
 
-            moveTo.call(this, x, y);
+            this._transform(x, y);
         },
 
         _handleStart: function (ev) {
@@ -156,7 +145,7 @@
             ];
 
             // make sure it is not moving anymore
-            moveTo.apply(this, getCurrentPosition.call(this));
+            this._transform.apply(this, getCurrentPosition.call(this));
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -348,6 +337,17 @@
                 // todo attach rAF to surveille computed style
                 this.scrollTo(newX, newY, this.options.bounceTime);
             }
+        },
+
+        _transform: function (x, y) {
+            this.x = Math.round(x);
+            this.y = Math.round(y);
+
+            var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
+                translateZ = ' translateZ(0)';
+
+            this.scroller.style['transform'] =
+            this.scroller.style['webkitTransform'] = transform + translateZ;
         }
 
 
