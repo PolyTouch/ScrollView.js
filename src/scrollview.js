@@ -16,6 +16,38 @@
     };
 
     // helpers
+    var math = {
+        distance: function (start, end) {
+            return end - start;
+        },
+        velocity: function (distance, duration) {
+            return Math.abs(distance) / duration; // px/ms
+        },
+        direction: function (delta) {
+            return delta < 0 ? -1 : delta > 0 ? 1 : 0;
+        },
+        inertia: function (current, direction, velocity, lower, upper, deceleration) {
+            var destination, duration,
+                t, a = deceleration || 0.0006;
+
+            t = velocity / deceleration; // a = v / t
+            destination = current + (velocity * (t * t) * 0.5 * deceleration * direction);
+
+            if (destination < lower || destination > upper) {
+                destination = destination < lower ? lower :
+                    destination > upper ? upper :
+                    destination;
+                t = Math.sqrt(Math.abs(destination - current) / (velocity * 0.5 * deceleration * direction));
+            }
+
+            return {
+                destination: Math.round(destination),
+                duration: parseFloat(t)
+            };
+        }
+    };
+
+
     function triggerEvent(type, data) {
         var ev = new CustomEvent(type, {
             detail: data || {},
@@ -24,46 +56,6 @@
         });
 
         this.view.dispatchEvent(ev);
-    }
-
-    function calculateDistance(start, end) {
-        return end - start;
-    }
-
-    function calculateVelocity(distance, duration) {
-        var velocity = Math.abs(distance) / duration; // px/ms
-
-        return velocity;
-    }
-
-    function calculateMomentum(current, direction, velocity, lower, upper, deceleration) {
-        var destination, duration, distance;
-
-        deceleration = deceleration || 0.0006;
-
-        duration = velocity / deceleration;
-        destination = current + (velocity * (duration * duration) * 0.5 * deceleration * direction);
-
-        //destination = current + (velocity * velocity) / (2 * deceleration) * direction;
-
-        if (destination < lower || destination > upper) {
-            distance = Math.abs(destination - current);
-
-            destination = destination < lower ? lower :
-                destination > upper ? upper :
-                destination;
-            duration = Math.sqrt((destination - current) / (velocity * 0.5 * deceleration * direction));
-
-
-            //destination = upper ? lower - (upper / 2.5 * velocity / 8) : lower;
-            //distance = Math.abs(destination - current);
-            //duration = distance / velocity;
-        }
-
-        return {
-            destination: Math.round(destination),
-            duration: parseFloat(duration)
-        };
     }
 
     // private functions
@@ -111,8 +103,8 @@
             return;
         }
 
-        var deltaX = this.options.scrollX ? calculateDistance(this._lastPoint.x, ev.pageX) : 0,
-            deltaY = this.options.scrollY ? calculateDistance(this._lastPoint.y, ev.pageY) : 0,
+        var deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
+            deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
             timestamp = new Date().getTime(),
             newX, newY;
 
@@ -173,8 +165,8 @@
         triggerEvent.call(this, 'scroll', {
             pointerId: this._curPointer,
             direction: [
-                deltaX < 0 ? -1 : deltaX > 0 ? 1 : 0,
-                deltaY < 0 ? -1 : deltaY > 0 ? 1 : 0
+                math.direction(deltaX),
+                math.direction(deltaY)
             ],
             x: newX,
             y: newY
@@ -188,8 +180,8 @@
         }
 
         var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
-            deltaX = this.options.scrollX ? calculateDistance(this._lastPoint.x, ev.pageX) : 0,
-            deltaY = this.options.scrollY ? calculateDistance(this._lastPoint.y, ev.pageY) : 0,
+            deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
+            deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
             distance, velocity, momentum, time,
             newX = this.x + deltaX,
             newY = this.y + deltaY;
@@ -209,23 +201,23 @@
         // start momentum animation if needed
         if (this.options.momentum && duration < 300) {
             distance = [
-                calculateDistance(this._lastKeyFrame.x, this.x),
-                calculateDistance(this._lastKeyFrame.y, this.y)
+                math.distance(this._lastKeyFrame.x, this.x),
+                math.distance(this._lastKeyFrame.y, this.y)
             ];
 
             direction = [
-                distance[0] < 0 ? -1 : distance[0] > 0 ? 1 : 0,
-                distance[1] < 0 ? -1 : distance[1] > 0 ? 1 : 0
+                math.direction(distance[0]),
+                math.direction(distance[1])
             ];
 
             velocity = [
-                calculateVelocity(distance[0], duration),
-                calculateVelocity(distance[1], duration)
+                math.velocity(distance[0], duration),
+                math.velocity(distance[1], duration)
             ];
 
             momentum = [ //inertia
-                calculateMomentum(this.x, direction[0], velocity[0], this._boundaries[0], 0),
-                calculateMomentum(this.y, direction[1], velocity[1], this._boundaries[1], 0)
+                math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
+                math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
             ];
 
             newX = momentum[0].destination;
@@ -356,7 +348,9 @@
             this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
 
             moveTo.call(this, x, y);
-        }
+        },
+
+
     };
 
     window.ScrollView = Sv;
