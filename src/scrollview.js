@@ -104,10 +104,6 @@
             this._enabled = cond === false ? cond : true;
         },
 
-        destroy: function () {
-
-        },
-
         cancel: function (pointerId) {
             if (pointerId && this._curPointer && this._curPointer !== pointerId) {
                 return;
@@ -242,7 +238,7 @@
             var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
                 deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
                 deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
-                distance, velocity, inertia, time,
+                distance, velocity, scrollSpace, inertia, time,
                 newX = this.x + deltaX,
                 newY = this.y + deltaY;
 
@@ -252,11 +248,13 @@
             document.removeEventListener('pointerup', this._handleEnd, false);
             document.removeEventListener('pointercancel', this._handleEnd, false);
             document.removeEventListener('pointermove', this._handleMove, false);
-            this.scrollTo(newX, newY);
 
             if (!this._hasMoved) { // has never scrolled
                 return
             }
+
+            // set last position
+            this.scrollTo(newX, newY);
 
             // start momentum animation if needed
             if (this.options.inertia && duration < 300) {
@@ -275,10 +273,17 @@
                     math.velocity(distance[1], duration)
                 ];
 
+                scrollSpace = [
+                    this.options.bounce ? this._boundaries[0] - this.view.clientWidth : this._boundaries[0],
+                    this.options.bounce ? this._boundaries[1] - this.view.clientHeight: this._boundaries[1],
+                    this.options.bounce ? 0 + this.view.clientWidth : 0,
+                    this.options.bounce ? 0 + this.view.clientHeight : 0
+                ];
+
                 // TODO add bounce spacing
                 inertia = [ //inertia
-                    math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
-                    math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
+                    math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2]),
+                    math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3])
                 ];
 
                 newX = inertia[0].destination;
@@ -298,17 +303,6 @@
             } else {
                 this._startBounceTransition();
             }
-
-            // TODO wait with eventing for transition
-            if (ev.type === 'pointercancel') {
-                triggerEvent(this.view, 'scrollcancel', {
-                    pointerId: this._curPointer
-                });
-            }
-
-            triggerEvent(this.view, 'scrollend', {
-                pointerId: this._curPointer
-            });
         },
 
         _handleInertiaEnd: function (ev) {
@@ -326,13 +320,17 @@
                 newY = this.y > 0 ? 0 :
                 this.y < this._boundaries[1] ? this._boundaries[1] :
                 this.y;
-
+            console.log('bounce');
             if (this.options.bounce) {
                 this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
                 this._observePosition();
 
                 this.scrollTo(newX, newY, this.options.bounceTime);
+            } else {
+                triggerEvent(this.view, 'scrollend', {
+                    pointerId: this._curPointer
+                });
             }
         },
 
@@ -340,6 +338,10 @@
             this._observePosition(false);
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
+
+            triggerEvent(this.view, 'scrollend', {
+                pointerId: this._curPointer
+            });
         },
 
         _forceTransitionEnd: function () {
