@@ -27,7 +27,7 @@
                 destination = destination < lower ? lower :
                     destination > upper ? upper :
                     destination;
-                t = Math.sqrt(Math.abs(destination - current) / (velocity * 0.5 * a * direction));
+                t = Math.sqrt(Math.abs((destination - current) / (velocity * 0.5 * a * direction)));
             }
 
             return {
@@ -274,10 +274,10 @@
                 ];
 
                 scrollSpace = [
-                    this.options.bounce ? this._boundaries[0] - this.view.clientWidth : this._boundaries[0],
-                    this.options.bounce ? this._boundaries[1] - this.view.clientHeight: this._boundaries[1],
-                    this.options.bounce ? 0 + this.view.clientWidth : 0,
-                    this.options.bounce ? 0 + this.view.clientHeight : 0
+                    this.options.bounce ? this._boundaries[0] - this.view.clientWidth / 2 : this._boundaries[0],
+                    this.options.bounce ? this._boundaries[1] - this.view.clientHeight / 2 : this._boundaries[1],
+                    this.options.bounce ? 0 + this.view.clientWidth / 2 : 0,
+                    this.options.bounce ? 0 + this.view.clientHeight / 2 : 0
                 ];
 
                 // TODO add bounce spacing
@@ -298,7 +298,7 @@
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
                 this._observePosition();
-
+                console.log('momentum', newX, newY, time);
                 this.scrollTo(newX, newY, time);
             } else {
                 this._startBounceTransition();
