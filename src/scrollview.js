@@ -53,6 +53,7 @@
         this.view = typeof el === 'string' ? document.querySelector(el) : el;
         this.scroller = this.view.children[0];
 
+        // TODO merge options
         this.options = {
             start: opt.start || [0, 0],
 
@@ -164,9 +165,9 @@
 
             // TODO add WIGGLE_THRESHOLD
             // We need to move at least 10 pixels for the scrolling to initiate
-            if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-                return;
-            }
+            //if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                //return;
+            //}
 
             // consider boundaries
             newX = newX > 0 ? // upper
