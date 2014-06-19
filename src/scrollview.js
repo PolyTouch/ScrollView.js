@@ -18,7 +18,7 @@
     // helpers
     var math = {
         distance: function (start, end) {
-            return end - start;
+            return Math.round(end - start);
         },
         velocity: function (distance, duration) {
             return Math.abs(distance) / duration; // px/ms
@@ -58,156 +58,9 @@
         this.view.dispatchEvent(ev);
     }
 
-    function handleMove(ev) {
-        if (!this._enabled || this._curPointer !== ev.pointerId) {
-            return;
-        }
 
-        var deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
-            deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
-            timestamp = new Date().getTime(),
-            newX, newY;
 
-        this._lastPoint = {
-            timestamp: timestamp,
-            x: ev.pageX,
-            y: ev.pageY
-        };
 
-        newX = this.x + deltaX;
-        newY = this.y + deltaY;
-
-        // TODO add WIGGLE_THRESHOLD
-        // We need to move at least 10 pixels for the scrolling to initiate
-        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-            return;
-        }
-
-        // consider boundaries
-        newX = newX > 0 ? // upper
-            this.options.bounce ? this.x + deltaX / 3 :
-            0 :
-            newX;
-        newY = newY > 0 ? // upper
-            this.options.bounce ? this.y + deltaY / 3 :
-            0 :
-            newY;
-        newX = newX < this._boundaries[0] ? // lower
-            this.options.bounce ? this.x + deltaX / 3 :
-            this._boundaries[0] :
-            newX;
-        newY = newY < this._boundaries[1] ? // lower
-            this.options.bounce ? this.y + deltaY / 3 :
-            this._boundaries[1] :
-            newY;
-
-        // initial move
-        if (!this._hasMoved) {
-            this._hasMoved = true;
-            triggerEvent.call(this, 'scrollstart', {
-                pointerId: this._curPointer,
-                x: this.x,
-                y: this.y
-            });
-        }
-
-        // save new keyframe every 300ms
-        if (timestamp - this._lastKeyFrame.timestamp > 300) {
-            this._lastKeyFrame = {
-                timestamp: timestamp,
-                x: newX,
-                y: newY
-            }
-        }
-
-        this.scrollTo(newX, newY);
-
-        triggerEvent.call(this, 'scroll', {
-            pointerId: this._curPointer,
-            direction: [
-                math.direction(deltaX),
-                math.direction(deltaY)
-            ],
-            x: newX,
-            y: newY
-        });
-    }
-
-    function handleEnd(ev) {
-        if (!this._enabled ||
-            this._curPointer !== ev.pointerId) {
-            return;
-        }
-
-        var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
-            deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
-            deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
-            distance, velocity, inertia, time,
-            newX = this.x + deltaX,
-            newY = this.y + deltaY;
-
-        // reset state
-        this._curPointer = null;
-
-        document.removeEventListener('pointerup', this._handleEnd, false);
-        document.removeEventListener('pointercancel', this._handleEnd, false);
-        document.removeEventListener('pointermove', this._handleMove, false);
-        this.scrollTo(newX, newY);
-
-        if (!this._hasMoved) { // has never scrolled
-            return
-        }
-
-        // start momentum animation if needed
-        if (this.options.inertia && duration < 300) {
-            distance = [
-                math.distance(this._lastKeyFrame.x, this.x),
-                math.distance(this._lastKeyFrame.y, this.y)
-            ];
-
-            direction = [
-                math.direction(distance[0]),
-                math.direction(distance[1])
-            ];
-
-            velocity = [
-                math.velocity(distance[0], duration),
-                math.velocity(distance[1], duration)
-            ];
-
-            inertia = [ //inertia
-                math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
-                math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
-            ];
-
-            newX = inertia[0].destination;
-            newY = inertia[1].destination;
-            time = Math.max(inertia[0].duration, inertia[1].duration);
-            console.log(newY);
-        }
-
-        if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
-            this.y <= 0 && this.y >= this._boundaries[1] &&
-            (newX != this.x || newY != this.y)) {
-            this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
-            this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
-
-            this.scrollTo(newX, newY, time);
-        } else {
-            bounceBack.call(this);
-        }
-
-        // TODO wait with eventing for transition
-        if (ev.type === 'pointercancel') {
-            triggerEvent.call(this, 'scrollcancel', {
-                pointerId: this._curPointer
-            });
-        }
-
-        triggerEvent.call(this, 'scrollend', {
-            pointerId: this._curPointer
-        });
-    }
 
     function handleTransitionEnd(ev) {
         this.scroller.removeEventListener('transitionEnd', this._handleTransitionEnd, false);
@@ -275,8 +128,8 @@
 
         // event handler
         this._handleStart = this._handleStart.bind(this);
-        this._handleMove = handleMove.bind(this);
-        this._handleEnd = handleEnd.bind(this);
+        this._handleMove = this._handleMove.bind(this);
+        this._handleEnd = this._handleEnd.bind(this);
         this._handleTransitionEnd = handleTransitionEnd.bind(this);
 
         this.view.addEventListener('pointerdown', this._handleStart, false);
@@ -329,7 +182,7 @@
             // make sure it is not moving anymore
             moveTo.apply(this, getCurrentPosition.call(this));
 
-            // previous point for delta calculation
+            // previous point (based on pointer) for delta calculation
             this._lastPoint = {
                 timestamp: timestamp,
                 x: ev.pageX,
@@ -347,6 +200,156 @@
             document.addEventListener('pointerup', this._handleEnd, false);
             document.addEventListener('pointercancel', this._handleEnd, false);
             document.addEventListener('pointermove', this._handleMove, false);
+        },
+
+        _handleMove: function (ev) {
+            if (!this._enabled || this._curPointer !== ev.pointerId) {
+                return;
+            }
+
+            var deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
+                deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
+                timestamp = new Date().getTime(),
+                newX, newY;
+
+            this._lastPoint = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            };
+
+            newX = this.x + deltaX;
+            newY = this.y + deltaY;
+
+            // TODO add WIGGLE_THRESHOLD
+            // We need to move at least 10 pixels for the scrolling to initiate
+            if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                return;
+            }
+
+            // consider boundaries
+            newX = newX > 0 ? // upper
+                this.options.bounce ? this.x + deltaX / 3 :
+                0 :
+                newX;
+            newY = newY > 0 ? // upper
+                this.options.bounce ? this.y + deltaY / 3 :
+                0 :
+                newY;
+            newX = newX < this._boundaries[0] ? // lower
+                this.options.bounce ? this.x + deltaX / 3 :
+                this._boundaries[0] :
+                newX;
+            newY = newY < this._boundaries[1] ? // lower
+                this.options.bounce ? this.y + deltaY / 3 :
+                this._boundaries[1] :
+                newY;
+
+            // initial move
+            if (!this._hasMoved) {
+                this._hasMoved = true;
+                triggerEvent.call(this, 'scrollstart', {
+                    pointerId: this._curPointer,
+                    x: this.x,
+                    y: this.y
+                });
+            }
+
+            // save new keyframe every 300ms
+            if (timestamp - this._lastKeyFrame.timestamp > 300) {
+                this._lastKeyFrame = {
+                    timestamp: timestamp,
+                    x: newX,
+                    y: newY
+                }
+            }
+
+            this.scrollTo(newX, newY);
+
+            triggerEvent.call(this, 'scroll', {
+                pointerId: this._curPointer,
+                direction: [
+                    math.direction(deltaX),
+                    math.direction(deltaY)
+                ],
+                x: newX,
+                y: newY
+            });
+        },
+
+        _handleEnd: function (ev) {
+            if (!this._enabled ||
+                this._curPointer !== ev.pointerId) {
+                return;
+            }
+
+            var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
+                deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
+                deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
+                distance, velocity, inertia, time,
+                newX = this.x + deltaX,
+                newY = this.y + deltaY;
+
+            // reset state
+            this._curPointer = null;
+
+            document.removeEventListener('pointerup', this._handleEnd, false);
+            document.removeEventListener('pointercancel', this._handleEnd, false);
+            document.removeEventListener('pointermove', this._handleMove, false);
+            this.scrollTo(newX, newY);
+
+            if (!this._hasMoved) { // has never scrolled
+                return
+            }
+
+            // start momentum animation if needed
+            if (this.options.inertia && duration < 300) {
+                distance = [
+                    math.distance(this._lastKeyFrame.x, this.x),
+                    math.distance(this._lastKeyFrame.y, this.y)
+                ];
+
+                direction = [
+                    math.direction(distance[0]),
+                    math.direction(distance[1])
+                ];
+
+                velocity = [
+                    math.velocity(distance[0], duration),
+                    math.velocity(distance[1], duration)
+                ];
+
+                inertia = [ //inertia
+                    math.inertia(this.x, direction[0], velocity[0], this._boundaries[0], 0),
+                    math.inertia(this.y, direction[1], velocity[1], this._boundaries[1], 0)
+                ];
+
+                newX = inertia[0].destination;
+                newY = inertia[1].destination;
+                time = Math.max(inertia[0].duration, inertia[1].duration);
+            }
+
+            if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
+                this.y <= 0 && this.y >= this._boundaries[1] &&
+                (newX != this.x || newY != this.y)) {
+                this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+                this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
+
+                this.scrollTo(newX, newY, time);
+            } else {
+                bounceBack.call(this);
+            }
+
+            // TODO wait with eventing for transition
+            if (ev.type === 'pointercancel') {
+                triggerEvent.call(this, 'scrollcancel', {
+                    pointerId: this._curPointer
+                });
+            }
+
+            triggerEvent.call(this, 'scrollend', {
+                pointerId: this._curPointer
+            });
         }
 
 
