@@ -47,25 +47,28 @@
         }
     };
 
-
-    function triggerEvent(type, data) {
+    function triggerEvent(elem, type, data) {
         var ev = new CustomEvent(type, {
             detail: data || {},
             bubbles: true,
             cancelable: true
         });
 
-        this.view.dispatchEvent(ev);
+        elem.dispatchEvent(ev);
     }
 
     function getCurrentPosition() {
         var style = window.getComputedStyle(this.scroller, null),
+            match,
             x, y;
+        console.log(style['transform'] || style['webkitTransform']);
+        style = (style['transform'] || style['webkitTransform']).match(/matrix\( *([0-9]+)px\ *, *([0-9]+)px *\)/);
 
         style = (style['transform'] || style['webkitTransform']).split(')')[0].split(', ');
         x = +(style[12] || style[4]);
         y = +(style[13] || style[5]);
 
+        console.log(x, y);
         return [x, y];
     }
 
@@ -139,13 +142,10 @@
             this._curPointer = ev.pointerId; // lock for pointer
             this._hasMoved = false;
 
-            this._boundaries = [ // negative numbers because we scroll negative
-                -this.view.scrollWidth + this.view.clientWidth,
-                -this.view.scrollHeight + this.view.clientHeight
-            ];
+            this._getBoundaries();
 
             // make sure it is not moving anymore
-            this._transform.apply(this, getCurrentPosition.call(this));
+            this._transform.apply(this, this._getTransformPosition() || [0, 0]);
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -213,7 +213,7 @@
             // initial move
             if (!this._hasMoved) {
                 this._hasMoved = true;
-                triggerEvent.call(this, 'scrollstart', {
+                triggerEvent(this.view, 'scrollstart', {
                     pointerId: this._curPointer,
                     x: this.x,
                     y: this.y
@@ -231,7 +231,7 @@
 
             this.scrollTo(newX, newY);
 
-            triggerEvent.call(this, 'scroll', {
+            triggerEvent(this.view, 'scroll', {
                 pointerId: this._curPointer,
                 direction: [
                     math.direction(deltaX),
@@ -308,12 +308,12 @@
 
             // TODO wait with eventing for transition
             if (ev.type === 'pointercancel') {
-                triggerEvent.call(this, 'scrollcancel', {
+                triggerEvent(this.view, 'scrollcancel', {
                     pointerId: this._curPointer
                 });
             }
 
-            triggerEvent.call(this, 'scrollend', {
+            triggerEvent(this.view, 'scrollend', {
                 pointerId: this._curPointer
             });
         },
@@ -348,6 +348,27 @@
 
             this.scroller.style['transform'] =
             this.scroller.style['webkitTransform'] = transform + translateZ;
+        },
+
+        _getTransformPosition: function () {
+            var style = window.getComputedStyle(this.scroller, null),
+                match;
+
+            match = (style['transform'] || style['webkitTransform'])
+                .match(/matrix\( *([0-9]+)px\ *, *([0-9]+)px *\)/);
+
+            if (match) {
+                return [x, y];
+            }
+
+            return null;
+        },
+
+        _getBoundaries: function () {
+            return this._boundaries = [ // negative numbers because we scroll negative
+                -this.view.scrollWidth + this.view.clientWidth,
+                -this.view.scrollHeight + this.view.clientHeight
+            ];
         }
 
 
