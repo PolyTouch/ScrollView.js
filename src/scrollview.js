@@ -41,18 +41,22 @@
         deceleration = deceleration || 0.0006;
 
         duration = velocity / deceleration;
-        destination = current + (velocity * duration * /* time */ 0.5 * deceleration * duration * direction);
+        destination = current + (velocity * (duration * duration) * 0.5 * deceleration * direction);
 
         //destination = current + (velocity * velocity) / (2 * deceleration) * direction;
 
-        if (destination < lower) {
-            destination = upper ? lower - (upper / 2.5 * velocity / 8) : lower;
+        if (destination < lower || destination > upper) {
             distance = Math.abs(destination - current);
-            duration = distance / velocity;
-        } else if (destination > upper) {
-            destination = upper ? upper / 2.5 * velocity / 8 : upper;
-            distance = Math.abs(current) + destination;
-            duration = distance / velocity;
+
+            destination = destination < lower ? lower :
+                destination > upper ? upper :
+                destination;
+            duration = Math.sqrt((destination - current) / (velocity * 0.5 * deceleration * direction));
+
+
+            //destination = upper ? lower - (upper / 2.5 * velocity / 8) : lower;
+            //distance = Math.abs(destination - current);
+            //duration = distance / velocity;
         }
 
         return {
@@ -230,8 +234,8 @@
         }
 
         if (newX != this.x || newY != this.y) {
-            //this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
-            //this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
+            this.scroller.addEventListener('transitionEnd', this._handleTransitionEnd, false);
+            this.scroller.addEventListener('webkitTransitionEnd', this._handleTransitionEnd, false);
 
             this.scrollTo(newX, newY, time);
         } else {
