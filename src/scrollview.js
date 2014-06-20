@@ -210,12 +210,6 @@
             newX = this.x + deltaX;
             newY = this.y + deltaY;
 
-            // TODO add WIGGLE_THRESHOLD
-            // We need to move at least 10 pixels for the scrolling to initiate
-            //if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-                //return;
-            //}
-
             // consider boundaries
             newX = newX > 0 ? // upper
                 this.options.bounce ? this.x + deltaX / 3 :
