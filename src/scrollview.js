@@ -96,6 +96,10 @@
             }
 
             this._curPointer = null;
+            this._forceTransitionEnd();
+            document.removeEventListener('pointerup', this._handleEnd, false);
+            document.removeEventListener('pointercancel', this._handleEnd, false);
+            document.removeEventListener('pointermove', this._handleMove, false);
         },
 
         scrollTo: function (x, y, time, easing) {
