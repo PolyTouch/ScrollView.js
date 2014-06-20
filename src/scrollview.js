@@ -125,7 +125,7 @@
             this._getBoundaries();
 
             // make sure it is not moving anymore
-            this._forceTransitionEnd();
+            this._forceTransitionEnd(true);
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -334,13 +334,22 @@
             });
         },
 
-        _forceTransitionEnd: function () {
+        _forceTransitionEnd: function (suppress) {
             this._observePosition(false);
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
+
+            if (!suppress) {
+                triggerEvent(this.view, 'scrollcancel', {
+                    pointerId: this._curPointer
+                });
+                triggerEvent(this.view, 'scrollend', {
+                    pointerId: this._curPointer
+                });
+            }
         },
 
         _transform: function (x, y) {
