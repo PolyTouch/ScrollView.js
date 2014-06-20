@@ -1,3 +1,13 @@
+/*!
+ * Scrollview.js @@version
+ * http://github.com/PolyTouch/ScrollView.js
+ *
+ *
+ * Copyright 2014 Damien Antipa
+ * Released under the MIT license
+ *
+ * Date: @@date
+ */
 (function (global) {
 
     var easingFn = {
@@ -17,20 +27,20 @@
             return delta < 0 ? -1 : delta > 0 ? 1 : 0;
         },
         inertia: function (current, direction, v, lower, upper, a) {
-            var destination, duration, t;
+            var dest, t;
 
             t = v / a; // a = v / t
-            destination = current + (v * (t * t) * 0.5 * a * direction);
+            dest = current + (v * (t * t) * 0.5 * a * direction);
 
-            if (destination < lower || destination > upper) {
-                destination = destination < lower ? lower :
-                    destination > upper ? upper :
-                    destination;
-                t = Math.sqrt(Math.abs((destination - current) / (v * 0.5 * a * direction)));
+            if (dest < lower || dest > upper) {
+                dest = dest < lower ? lower :
+                    dest > upper ? upper :
+                    dest;
+                t = Math.sqrt(Math.abs((dest - current) / (v * 0.5 * a * direction)));
             }
 
             return {
-                destination: Math.round(destination),
+                destination: Math.round(dest),
                 duration: parseFloat(t)
             };
         }
@@ -84,7 +94,7 @@
     }
 
     Sv.prototype = {
-        version: '0.0.0',
+        version: '@@version',
 
         enable: function (cond) {
             this._enabled = cond === false ? cond : true;
@@ -105,10 +115,10 @@
         scrollTo: function (x, y, time, easing) {
             var ease = easing || easingFn.circular;
 
-            this.scroller.style['transitionTimingFunction'] =
-            this.scroller.style['webkitTransitionTimingFunction'] = ease;
-            this.scroller.style['transitionDuration'] =
-            this.scroller.style['webkitTransitionDuration'] = (time || 0) + 'ms';
+            this.scroller.style.transitionTimingFunction =
+            this.scroller.style.webkitTransitionTimingFunction = ease;
+            this.scroller.style.transitionDuration =
+            this.scroller.style.webkitTransitionDuration = (time || 0) + 'ms';
 
             this._transform(x, y);
         },
@@ -208,7 +218,7 @@
                     timestamp: timestamp,
                     x: newX,
                     y: newY
-                }
+                };
             }
 
             this.scrollTo(newX, newY);
@@ -229,7 +239,7 @@
             var duration = new Date().getTime() - this._lastKeyFrame.timestamp,
                 deltaX = this.options.scrollX ? math.distance(this._lastPoint.x, ev.pageX) : 0,
                 deltaY = this.options.scrollY ? math.distance(this._lastPoint.y, ev.pageY) : 0,
-                distance, velocity, scrollSpace, inertia, time,
+                distance, direction, velocity, scrollSpace, inertia, time,
                 newX = this.x + deltaX,
                 newY = this.y + deltaY;
 
@@ -241,7 +251,7 @@
             document.removeEventListener('pointermove', this._handleMove, false);
 
             if (!this._hasMoved) { // has never scrolled
-                return
+                return;
             }
 
             // set last position
@@ -283,7 +293,7 @@
 
             if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
                 this.y <= 0 && this.y >= this._boundaries[1] &&
-                (newX != this.x || newY != this.y)) {
+                (newX !== this.x || newY !== this.y)) {
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
@@ -297,7 +307,7 @@
             }
         },
 
-        _handleInertiaEnd: function (ev) {
+        _handleInertiaEnd: function () {
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
@@ -326,7 +336,7 @@
             }
         },
 
-        _handleBounceTransitionEnd: function (ev) {
+        _handleBounceTransitionEnd: function () {
             this._observePosition(false);
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
@@ -361,15 +371,15 @@
             var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
                 translateZ = ' translateZ(0)';
 
-            this.scroller.style['transform'] =
-            this.scroller.style['webkitTransform'] = transform + translateZ;
+            this.scroller.style.transform =
+            this.scroller.style.webkitTransform = transform + translateZ;
         },
 
         _getTransformPosition: function () {
             var style = window.getComputedStyle(this.scroller, null),
                 match;
 
-            match = (style['transform'] || style['webkitTransform'])
+            match = (style.transform || style.webkitTransform)
                 .match(/matrix\( *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *\)/);
 
             if (match) {
@@ -380,7 +390,7 @@
         },
 
         _getBoundaries: function () {
-            return this._boundaries = [ // negative numbers because we scroll negative
+            this._boundaries = [ // negative numbers because we scroll negative
                 -this.view.scrollWidth + this.view.clientWidth,
                 -this.view.scrollHeight + this.view.clientHeight
             ];
@@ -407,7 +417,7 @@
                     this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
                 };
 
-                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this))
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
             }
 
         },
