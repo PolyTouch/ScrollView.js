@@ -57,12 +57,13 @@
         this.options = {
             start: opt.start || [0, 0],
 
-            scrollX: opt.scrollX || false,
-            scrollY: opt.scrollY || true,
+            scrollX: opt.scrollX !== undefined ? opt.scrollX : false,
+            scrollY: opt.scrollY !== undefined ? opt.scrollY : true,
 
-            inertia: opt.inertia || true,
+            inertia: opt.inertia !== undefined ? opt.inertia : true,
+            inertiaDeceleration: opt.inertiaDeceleration || 0.0006,
 
-            bounce: opt.bounce || true,
+            bounce: opt.bounce !== undefined ? opt.bounce : true,
             bounceTime: opt.bounceTime || 600
         };
 
