@@ -67,6 +67,7 @@
 
         // define initial state
         this._enabled = true;
+        this._lastPointer = false;
         this._curPointer = false;
 
         // event handler
@@ -94,7 +95,7 @@
                 return;
             }
 
-            this._curPointer = null;
+            this._curPointer = false;
             this._forceTransitionEnd();
             document.removeEventListener('pointerup', this._handleEnd, false);
             document.removeEventListener('pointercancel', this._handleEnd, false);
@@ -126,6 +127,7 @@
 
             // make sure it is not moving anymore
             this._forceTransitionEnd(true);
+            this._lastPointer = ev.pointerId; // memorize the pointer (incl transitions)
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -232,7 +234,7 @@
                 newY = this.y + deltaY;
 
             // reset state
-            this._curPointer = null;
+            this._curPointer = false;
 
             document.removeEventListener('pointerup', this._handleEnd, false);
             document.removeEventListener('pointercancel', this._handleEnd, false);
@@ -319,7 +321,7 @@
                 this.scrollTo(newX, newY, this.options.bounceTime);
             } else {
                 triggerEvent(this.view, 'scrollend', {
-                    pointerId: this._curPointer
+                    pointerId: this._lastPointer
                 });
             }
         },
@@ -330,7 +332,7 @@
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
 
             triggerEvent(this.view, 'scrollend', {
-                pointerId: this._curPointer
+                pointerId: this._lastPointer
             });
         },
 
@@ -344,10 +346,10 @@
 
             if (!suppress) {
                 triggerEvent(this.view, 'scrollcancel', {
-                    pointerId: this._curPointer
+                    pointerId: this._lastPointer
                 });
                 triggerEvent(this.view, 'scrollend', {
-                    pointerId: this._curPointer
+                    pointerId: this._lastPointer
                 });
             }
         },
@@ -395,7 +397,7 @@
 
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
                         triggerEvent(this.view, 'scroll', {
-                            pointerId: this._curPointer,
+                            pointerId: this._lastPointer,
                             x: pos[0],
                             y: pos[1]
                         });
