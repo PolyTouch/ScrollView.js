@@ -52,7 +52,6 @@
         this.view = typeof el === 'string' ? document.querySelector(el) : el;
         this.scroller = this.view.children[0];
 
-        // TODO merge options
         this.options = {
             start: opt.start || [0, 0],
 
