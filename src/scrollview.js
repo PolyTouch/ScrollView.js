@@ -16,18 +16,17 @@
         direction: function (delta) {
             return delta < 0 ? -1 : delta > 0 ? 1 : 0;
         },
-        inertia: function (current, direction, velocity, lower, upper, deceleration) {
-            var destination, duration,
-                t, a = deceleration || 0.0006;
+        inertia: function (current, direction, v, lower, upper, a) {
+            var destination, duration, t;
 
-            t = velocity / a; // a = v / t
-            destination = current + (velocity * (t * t) * 0.5 * a * direction);
+            t = v / a; // a = v / t
+            destination = current + (v * (t * t) * 0.5 * a * direction);
 
             if (destination < lower || destination > upper) {
                 destination = destination < lower ? lower :
                     destination > upper ? upper :
                     destination;
-                t = Math.sqrt(Math.abs((destination - current) / (velocity * 0.5 * a * direction)));
+                t = Math.sqrt(Math.abs((destination - current) / (v * 0.5 * a * direction)));
             }
 
             return {
@@ -272,8 +271,8 @@
                 ];
 
                 inertia = [
-                    math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2]),
-                    math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3])
+                    math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2], this.options.inertiaDeceleration),
+                    math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3], this.options.inertiaDeceleration)
                 ];
 
                 newX = inertia[0].destination;
