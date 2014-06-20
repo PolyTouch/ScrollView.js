@@ -79,21 +79,17 @@ body {
 </div>
 <script type="text/javascript">
 
-var elem = document.getElementById('wrapper');
+var elem = document.getElementById('wrapper'),
+    scroller = new ScrollView('#wrapper');
 
-var myScroll = new ScrollView('#wrapper');
+function plotEvent (ev) {
+    console.log(ev.type, ev.detail);
+}
 
-elem.addEventListener('scrollstart', function (ev) {
-    console.log(ev);
-}, false);
-
-elem.addEventListener('scrollend', function (ev) {
-    console.log(ev);
-}, false);
-
-elem.addEventListener('scroll', function (ev) {
-    console.log(ev.detail);
-}, false);
+elem.addEventListener('scrollstart', plotEvent, false);
+elem.addEventListener('scroll', plotEvent, false);
+elem.addEventListener('scrollcancel', plotEvent, false);
+elem.addEventListener('scrollend', plotEvent, false);
 
 </script>
 
