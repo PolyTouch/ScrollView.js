@@ -56,6 +56,18 @@
         elem.dispatchEvent(ev);
     }
 
+    /**
+     * @constructor ScrollView
+     * @param {HTMLElement|String} el
+     * @param {Object} [options]
+     * @param {Number[]} [options.start=[0,0]]
+     * @param {Boolean} [options.scrollX=false]
+     * @param {Boolean} [options.scrollY=true]
+     * @param {Boolean} [options.inertia=true]
+     * @param {Number} [options.inertiaDeceleration=0.0006]
+     * @param {Boolean} [options.bounce=true]
+     * @param {Number} [options.bounceTime=600]
+     */
     function Sv(el, options) {
         var opt = options || {};
 
@@ -94,12 +106,25 @@
     }
 
     Sv.prototype = {
+        /**
+         * Version of the ScrollView
+         * @memberof ScrollView
+         * @type {String}
+         */
         version: '@@version',
 
+        /**
+         * @memberof ScrollView
+         * @param  {Boolean} [cond] false to disable
+         */
         enable: function (cond) {
             this._enabled = cond === false ? cond : true;
         },
 
+        /**
+         * @memberof ScrollView
+         * @param  {Number} [pointerId] cancel if a specific pointer holds the view, or null to cancel anyways
+         */
         cancel: function (pointerId) {
             if (pointerId && this._curPointer && this._curPointer !== pointerId) {
                 return;
@@ -112,6 +137,13 @@
             document.removeEventListener('pointermove', this._handleMove, false);
         },
 
+        /**
+         * @memberof ScrollView
+         * @param  {Number} x
+         * @param  {Number} y
+         * @param  {Number} [time=0]
+         * @param  {String} [easing]
+         */
         scrollTo: function (x, y, time, easing) {
             var ease = easing || easingFn.circular;
 
