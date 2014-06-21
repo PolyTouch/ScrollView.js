@@ -1,12 +1,13 @@
 /*!
- * Scrollview.js 1.0.2
+ * Scrollview.js 1.0.3
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
- * Copyright 2014 Damien Antipa
- * Released under the MIT license
+ * Copyright 2014 Adobe Systems Incorporated
+ * Released under the Apache License v2
  *
- * Date: 2014-06-21T13:10:17.741Z
+ * Author: Damien Antipa
+ * Date: 2014-06-21T15:24:18.578Z
  */
 (function (global) {
 
@@ -138,7 +139,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.0.2',
+        version: '1.0.3',
 
         /**
          * Current position on the x-axis

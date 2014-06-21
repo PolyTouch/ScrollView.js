@@ -3,9 +3,10 @@
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
- * Copyright 2014 Damien Antipa
- * Released under the MIT license
+ * Copyright 2014 Adobe Systems Incorporated
+ * Released under the Apache License v2
  *
+ * Author: @@author
  * Date: @@date
  */
 (function (global) {

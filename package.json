@@ -1,6 +1,6 @@
 {
     "name": "scrollview",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "ScrollView to enable JS controlled scrolling",
     "homepage": "http://damien.antipa.at",
     "author": "Damien Antipa",
@@ -15,12 +15,7 @@
         "grunt-replace": "~0.7.0",
         "grunt-contrib-yuidoc": "~0.5.2"
     },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "http://www.opensource.org/licenses/mit-license.php"
-        }
-    ],
+    "licenses": "Apache License v2",
     "repository": {
         "type": "git",
         "url": "https://github.com/PolyTouch/ScrollView.js.git"
