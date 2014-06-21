@@ -14,7 +14,8 @@ module.exports = function(grunt) {
                     patterns: [{
                         json: {
                             version: pkg.version,
-                            date: buildTime
+                            date: buildTime,
+                            author: pkg.author
                         }
                     }]
                 }
