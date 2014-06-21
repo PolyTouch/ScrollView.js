@@ -1,12 +1,12 @@
 /*!
- * Scrollview.js 1.0.0
+ * Scrollview.js 1.0.1
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
  * Copyright 2014 Damien Antipa
  * Released under the MIT license
  *
- * Date: 2014-06-19T19:48:16.043Z
+ * Date: 2014-06-21T12:03:01.924Z
  */
 (function (global) {
 
@@ -111,7 +111,7 @@
          * @memberof ScrollView
          * @type {String}
          */
-        version: '1.0.0',
+        version: '1.0.1',
 
         /**
          * @memberof ScrollView
@@ -380,7 +380,7 @@
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
 
-            if (this._hasMoved && !suppress) {
+            if (!suppress) {
                 triggerEvent(this.view, 'scrollcancel', {
                     pointerId: this._lastPointer
                 });

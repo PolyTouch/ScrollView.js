@@ -1,6 +1,6 @@
 {
     "name": "scrollview",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "ScrollView to enable JS controlled scrolling",
     "homepage": "http://damien.antipa.at",
     "author": "Damien Antipa",
