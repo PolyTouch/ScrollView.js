@@ -380,7 +380,7 @@
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
 
-            if (!suppress) {
+            if (this._hasMoved && !suppress) {
                 triggerEvent(this.view, 'scrollcancel', {
                     pointerId: this._lastPointer
                 });
