@@ -1,7 +1,7 @@
 ScrollView
 ====================================
 
-ScrollView is a library which makes containers scrollable with Javascript. Unlike a native Scrolling this allows a more advanced handling which includes inertia, border bounce and continues eventing on mobile devices.
+ScrollView is a Javascript library which makes containers scrollable.. Unlike a native Scrolling this allows a more advanced handling which includes inertia, border bounce and continues eventing on mobile devices.
 
 This library is inspired by Matteo's [iScroll](http://iscrolljs.com/) which is a great piece of code. I used to rely on it beforehand, however I wrote my own library to support multi touch, to have real DOM events and a slightly better performance. If you are looking for a scrolling library with extensive browser support and way more features, please go for [iScroll](http://iscrolljs.com/) which is the more complete product.
 
@@ -39,8 +39,13 @@ This one liner of Javascript will activate the scrolling functionality.
 
 Examples
 ------------------------------------
-* [Default](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/vertical.html) scrolling example
+* [Default options](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/vertical.html) scrolling example
 * [Horizontal](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/horizontal.html) scrolling example
+
+
+Coordinate system
+------------------------------------
+ScrollView is using an inverse coordinate system. That means the values from the top/left of point zero are positive and x/y values for bottom right are negative. So usually you will be dealing with negative values.
 
 
 Options
@@ -122,19 +127,19 @@ scroller.enable(); // enable scroller
 
 ##### cancel([pointerId])
 
-Cancel the current scroll operation for a specific pointerId or for any pointerId.
+Cancel the current scroll operation for a specific [pointerId](http://www.w3.org/Submission/2012/SUBM-pointer-events-20120907/#pointerevent-interface) or if none passed it will cancel no matter what pointer is currently controlling it.
 
 ```js
 var scroller = new ScrollView('#viewport');
 
 scroller.cancel(2); // cancel for pointer id "2" (if he has control)
-scroller.cancel(); // cancel any pointer id
+scroller.cancel(); // cancel anyways.
 
 ```
 
-##### scrollTo(x, y, [time], [easing])
+##### scrollTo(x, y, [time=0], [easing])
 
-Scroll to a passed position x/y in certain amount of time in ms. A easing string may be passed to modify the easing. If time is not set, the positioning happens immediately. 
+Scroll to a passed position x/y in certain amount of time in ms. A easing string may be passed to modify the easing, the easing string might be a value as describes in the [W3C transition timing definition](http://www.w3.org/TR/css3-transitions/#transition-timing-function). If time is not set, the positioning happens immediately. 
 
 ```js
 var scroller = new ScrollView('#viewport');
