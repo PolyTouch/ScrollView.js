@@ -37,11 +37,15 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jsdoc : {
-            dist : {
-                src: ['scrollview.js'],
+        yuidoc : {
+            compile: {
+                name: pkg.name,
+                description: pkg.description,
+                version: pkg.version,
+                url: pkg.homepage,
                 options: {
-                    destination: 'docs'
+                    paths: 'src/',
+                    outdir: 'docs/'
                 }
             }
         }
@@ -50,7 +54,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-replace');
-    grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
-    grunt.registerTask('default', ['replace', 'jshint', 'uglify', 'jsdoc']);
+    grunt.registerTask('default', ['replace', 'jshint', 'uglify', 'yuidoc']);
 };
