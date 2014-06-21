@@ -57,7 +57,8 @@
     }
 
     /**
-     * @constructor ScrollView
+     * @class ScrollView
+     * @constructor
      * @param {HTMLElement|String} el
      * @param {Object} [options]
      * @param {Number[]} [options.start=[0,0]]
@@ -106,15 +107,55 @@
     }
 
     Sv.prototype = {
+
+        /**
+         * Fired when a user initiates a scroll operation.
+         * @event scrollstart
+         * @param {Number} detail.pointerId
+         * @param {Number} detail.x
+         * @param {Number} detail.y
+         */
+        /**
+         * Fired while scrolling
+         * @event scroll
+         * @param {Number} detail.pointerId
+         * @param {Number} detail.x
+         * @param {Number} detail.y
+         */
+        /**
+         * Fired when a user initiates a scroll operation.
+         * @event scrollcancel
+         * @param {Number} detail.pointerId
+         */
+        /**
+         * Fired when a user initiates a scroll operation.
+         * @event scrollend
+         * @param {Number} detail.pointerId
+         */
+
         /**
          * Version of the ScrollView
-         * @memberof ScrollView
+         * @property version
          * @type {String}
          */
         version: '@@version',
 
         /**
-         * @memberof ScrollView
+         * Current position on the x-axis
+         * @property x
+         * @type {Number}
+         */
+        x: 0,
+
+        /**
+         * Current position on the y-axis
+         * @property y
+         * @type {Number}
+         */
+        y: 0,
+
+        /**
+         * @method enable
          * @param  {Boolean} [cond] false to disable
          */
         enable: function (cond) {
@@ -122,7 +163,7 @@
         },
 
         /**
-         * @memberof ScrollView
+         * @method cancel
          * @param  {Number} [pointerId] cancel if a specific pointer holds the view, or null to cancel anyways
          */
         cancel: function (pointerId) {
@@ -138,7 +179,7 @@
         },
 
         /**
-         * @memberof ScrollView
+         * @method scrollTo
          * @param  {Number} x
          * @param  {Number} y
          * @param  {Number} [time=0]
