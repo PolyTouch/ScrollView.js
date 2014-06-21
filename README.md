@@ -37,4 +37,71 @@ var scroller = new ScrollView('#viewport');
 ```
 This one liner of Javascript will activate the scrolling functionality.
 
-addeventlistner-polyfill/) polyfill for IE 8.0 and older
+Examples
+------------------------------------
+* [Default](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/vertical.html) scrolling example
+* [Horizontal](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/horizontal.html) scrolling example
+
+
+Options
+------------------------------------
+
+In order to initialise a ScrollView you either pass a selector or a HTMLElement.
+
+```js
+var elem = document.getElementById('viewport'),
+    scroller = new ScrollView(elem);
+```
+Additionally you can pass an advanced configuration as a second parameter. 
+
+```js
+var scroller = new ScrollView('#viewport', {
+	scrollX: true
+});
+```
+These options can be passed (also described in the [in-code documentation](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/docs/index.html))
+
+##### start = [0, 0]
+
+Allows to start at a different scroll position when the View gets initialised:
+
+```js
+var scroller = new ScrollView('#viewport', {
+	start: [-100, -50]
+});
+```
+This makes the ScrollView start on the x-axis at -100 and on y-axis at -50;
+
+##### scrollX = false and scrollY = true
+
+Enabling this will allow to set the scroll direction for [horizontal](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/horizontal.html) or [vertical](https://cdn.rawgit.com/PolyTouch/ScrollView.js/master/example/vertical.html) scrolling.
+
+```js
+var scroller = new ScrollView('#viewport', {
+	scrollX: true,
+	scrollY: false
+});
+```
+
+##### inertia = true and inertiaDeceleration = 0.0006
+
+Smooth continues scrolling if the user scrolled with a high enough speed to make the panel continue. The higher the deceleration rate is, the faster the panel will stop.
+
+```js
+var scroller = new ScrollView('#viewport', {
+	inertia: true,
+	inertiaDeceleration: 0.0025
+});
+```
+
+##### bounce = true and bounceTime = 600
+
+The panel will bounce back to the outer limits if the user leaves them. The bounceTime defines the time in ms how long the bounce transition will be performed.
+
+```js
+var scroller = new ScrollView('#viewport', {
+	bounce: true,
+	bounceTime: 1000
+});
+```
+
