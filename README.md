@@ -105,3 +105,76 @@ var scroller = new ScrollView('#viewport', {
 });
 ```
 
+
+Events
+------------------------------------
+Several events will be fired on the viewport DOM element in the following order.
+
+##### scrollstart
+
+Is fired when a user initiates a scroll operation.
+
+```js
+var elem = document.getElementById('viewport');
+
+elem.addEventListener('scrollstart', function (ev) {
+	console.log('current pointer', ev.detail.pointerId);
+	console.log('x', ev.detail.x);
+	console.log('y', ev.detail.y);
+}, false);
+
+```
+
+##### scroll
+
+Fired while scrolling and gives the current scrolling position even during inertia movement and bouncing.
+
+```js
+var elem = document.getElementById('viewport');
+
+elem.addEventListener('scroll', function (ev) {
+	console.log('current pointer', ev.detail.pointerId);
+	console.log('x', ev.detail.x);
+	console.log('y', ev.detail.y);
+}, false);
+
+```
+
+##### scrollcancel
+
+Fired if a scrolling operation was interrupted. This may happen if the user takes control over the panel again even though it is still in transition.
+
+
+```js
+var elem = document.getElementById('viewport');
+
+elem.addEventListener('scrollcancel', function (ev) {
+	console.log('current pointer', ev.detail.pointerId);
+}, false);
+
+```
+
+##### scrollend
+
+Indicated the end of a scroll operation.
+
+```js
+var elem = document.getElementById('viewport');
+
+elem.addEventListener('scrollend', function (ev) {
+	console.log('current pointer', ev.detail.pointerId);
+}, false);
+
+```
+
+Dependencies
+------------------------------------
+W3C Pointer Events support, either native or through a polyfill like [Google's Polymer polyfill](https://github.com/polymer/PointerEvents) or [Microsoft's Hand.js](http://handjs.codeplex.com/).
+
+Browser Support
+------------------------------------
+Without polyfill: IE11
+
+With polyfill: IE10+,  evergreens Chrome, Firefox, Android 3.0+, iOS 6.0+
+
+IE10+, evergreens Chrome, Firefox, Android 4.4+, iOS 5.0+
