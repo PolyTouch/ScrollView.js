@@ -1,0 +1,270 @@
+{
+    "project": {
+        "name": "scrollview",
+        "description": "ScrollView to enable JS controlled scrolling",
+        "version": "1.0.2",
+        "url": "http://damien.antipa.at"
+    },
+    "files": {
+        "src/scrollview.js": {
+            "name": "src/scrollview.js",
+            "modules": {},
+            "classes": {
+                "ScrollView": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "ScrollView": {
+            "name": "ScrollView",
+            "shortname": "ScrollView",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/scrollview.js",
+            "line": 59,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "el",
+                    "description": "",
+                    "type": "HTMLElement|String"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "start",
+                            "description": "",
+                            "type": "Number[]",
+                            "optional": true,
+                            "optdefault": "[0,0"
+                        },
+                        {
+                            "name": "scrollX",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "scrollY",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "inertia",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "inertiaDeceleration",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.0006"
+                        },
+                        {
+                            "name": "bounce",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "bounceTime",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "600"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/scrollview.js",
+            "line": 111,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollstart",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 118,
+            "description": "Fired while scrolling",
+            "itemtype": "event",
+            "name": "scroll",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 125,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollcancel",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 130,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollend",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 136,
+            "description": "Version of the ScrollView",
+            "itemtype": "property",
+            "name": "version",
+            "type": "{String}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 143,
+            "description": "Current position on the x-axis",
+            "itemtype": "property",
+            "name": "x",
+            "type": "{Number}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 150,
+            "description": "Current position on the y-axis",
+            "itemtype": "property",
+            "name": "y",
+            "type": "{Number}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 157,
+            "itemtype": "method",
+            "name": "enable",
+            "params": [
+                {
+                    "name": "cond",
+                    "description": "false to disable",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 165,
+            "itemtype": "method",
+            "name": "cancel",
+            "params": [
+                {
+                    "name": "pointerId",
+                    "description": "cancel if a specific pointer holds the view, or null to cancel anyways",
+                    "type": "Number",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 181,
+            "itemtype": "method",
+            "name": "scrollTo",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "time",
+                    "description": "",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "0"
+                },
+                {
+                    "name": "easing",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        }
+    ],
+    "warnings": []
+}
