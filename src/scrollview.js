@@ -349,7 +349,7 @@
                 this.y < this._boundaries[1] ? this._boundaries[1] :
                 this.y;
 
-            if (this.options.bounce) {
+            if (this.options.bounce && (newX !== this.x || newY !== this.y)) {
                 this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
                 this._observePosition();
