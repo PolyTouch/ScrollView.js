@@ -105,6 +105,43 @@ var scroller = new ScrollView('#viewport', {
 });
 ```
 
+Methods
+------------------------------------
+
+##### enable([cond])
+
+To enable or disable the ScrollView.
+
+```js
+var scroller = new ScrollView('#viewport');
+
+scroller.enable(false); // disable scroller
+scroller.enable(); // enable scroller
+
+```
+
+##### cancel([pointerId])
+
+Cancel the current scroll operation for a specific pointerId or for any pointerId.
+
+```js
+var scroller = new ScrollView('#viewport');
+
+scroller.cancel(2); // cancel for pointer id "2" (if he has control)
+scroller.cancel(); // cancel any pointer id
+
+```
+
+##### scrollTo(x, y, [time], [easing])
+
+Scroll to a passed position x/y in certain amount of time in ms. A easing string may be passed to modify the easing. If time is not set, the positioning happens immediately. 
+
+```js
+var scroller = new ScrollView('#viewport');
+
+scroller.scrollTo(-200, 0, 1000, 'ease-in-out');
+
+```
 
 Events
 ------------------------------------
