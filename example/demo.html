@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 
-<title>iScroll demo: barebone</title>
+<title>ScrollView Demo: vertical</title>
 <script type="text/javascript" src="pointerevents.js"></script>
 <script type="text/javascript" src="../src/scrollview.js"></script>
 <style>
@@ -13,7 +13,7 @@ body {
     overflow: hidden;
 }
 
-#wrapper {
+#viewport {
     position: relative;
     width: 300px;
     height: 300px;
@@ -37,27 +37,19 @@ body {
     text-size-adjust: none;
 }
 
-#scroller {
+#scrollpanel {
     position: absolute;
 
     /* Prevent elements to be highlighted on tap */
     -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-    /* Put the scroller into the HW Compositing layer right from the start */
-    -webkit-transform: translateZ(0);
-    -moz-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    -o-transform: translateZ(0);
-    transform: translateZ(0);
 }
 </style>
 
 </head>
 <body>
 
-<div id="wrapper" touch-action="none">
-    <div id="scroller">
-        <p><strong>This demo shows the minimum CSS/HTML/JS configuration you need to run the iScroll. Look at the source code for details.</strong></p>
+<div id="viewport" touch-action="none">
+    <div id="scrollpanel">
 
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
@@ -79,8 +71,8 @@ body {
 </div>
 <script type="text/javascript">
 
-var elem = document.getElementById('wrapper'),
-    scroller = new ScrollView('#wrapper');
+var elem = document.getElementById('viewport'),
+    scroller = new ScrollView(elem);
 
 function plotEvent (ev) {
     console.log(ev.type, ev.detail);
