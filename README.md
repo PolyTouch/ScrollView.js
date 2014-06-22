@@ -1,7 +1,7 @@
 ScrollView
 ====================================
 
-ScrollView is a Javascript library which makes containers scrollable.. Unlike a native Scrolling this allows a more advanced handling which includes inertia, border bounce and continues eventing on mobile devices.
+ScrollView is a Javascript library which makes containers scrollable. Unlike a native Scrolling this allows a more advanced handling which includes inertia, border bounce and continues eventing on mobile devices.
 
 This library is inspired by Matteo's [iScroll](http://iscrolljs.com/) which is a great piece of code. I used to rely on it beforehand, however I wrote my own library to support multi touch, to have real DOM events and a slightly better performance. If you are looking for a scrolling library with extensive browser support and way more features, please go for [iScroll](http://iscrolljs.com/) which is the more complete product.
 
@@ -112,6 +112,17 @@ var scroller = new ScrollView('#viewport', {
 
 Methods
 ------------------------------------
+
+##### destroy()
+
+To teardown the ScrollView. It will unbind all event handlers from the view. However the scroll position remains the same.
+
+```js
+var scroller = new ScrollView('#viewport');
+
+scroller.destroy();
+
+```
 
 ##### enable([cond])
 
