@@ -206,7 +206,7 @@
         },
 
         _handleStart: function (ev) {
-            if (!this._enabled || this._curPointer) {
+            if (!this._enabled || this._curPointer || (ev.pointerType === 'mouse' && ev.buttons !== 1)) {
                 return;
             }
 
