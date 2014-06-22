@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.1.0</em>
+            <em>API Docs for: 1.1.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -294,7 +294,7 @@
         },
 
         _handleStart: function (ev) {
-            if (!this._enabled || this._curPointer) {
+            if (!this._enabled || this._curPointer || (ev.pointerType === &#x27;mouse&#x27; &amp;&amp; ev.buttons !== 1)) {
                 return;
             }
 

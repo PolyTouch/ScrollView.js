@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.1.0
+ * Scrollview.js 1.1.1
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-06-21T15:34:06.915Z
+ * Date: 2014-06-21T15:40:51.314Z
  */
 (function (global) {
 
@@ -139,7 +139,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.1.0',
+        version: '1.1.1',
 
         /**
          * Current position on the x-axis
@@ -206,7 +206,7 @@
         },
 
         _handleStart: function (ev) {
-            if (!this._enabled || this._curPointer) {
+            if (!this._enabled || this._curPointer || (ev.pointerType === 'mouse' && ev.buttons !== 1)) {
                 return;
             }
 
