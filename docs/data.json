@@ -2,7 +2,7 @@
     "project": {
         "name": "scrollview",
         "description": "ScrollView to enable JS controlled scrolling",
-        "version": "1.0.3",
+        "version": "1.1.0",
         "url": "http://damien.antipa.at"
     },
     "files": {
@@ -207,6 +207,13 @@
             "file": "src/scrollview.js",
             "line": 158,
             "itemtype": "method",
+            "name": "destroy",
+            "class": "ScrollView"
+        },
+        {
+            "file": "src/scrollview.js",
+            "line": 166,
+            "itemtype": "method",
             "name": "enable",
             "params": [
                 {
@@ -220,7 +227,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 166,
+            "line": 174,
             "itemtype": "method",
             "name": "cancel",
             "params": [
@@ -235,7 +242,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 182,
+            "line": 190,
             "itemtype": "method",
             "name": "scrollTo",
             "params": [

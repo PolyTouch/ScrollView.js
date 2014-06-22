@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.3</em>
+            <em>API Docs for: 1.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -242,6 +242,14 @@
          * @type {Number}
          */
         y: 0,
+
+        /**
+         * @method destroy
+         */
+        destroy: function () {
+            this.cancel();
+            this.view.removeEventListener(&#x27;pointerdown&#x27;, this._handleStart, false);
+        },
 
         /**
          * @method enable
