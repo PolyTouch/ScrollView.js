@@ -156,6 +156,14 @@
         y: 0,
 
         /**
+         * @method destroy
+         */
+        destroy: function () {
+            this.cancel();
+            this.view.removeEventListener('pointerdown', this._handleStart, false);
+        },
+
+        /**
          * @method enable
          * @param  {Boolean} [cond] false to disable
          */
