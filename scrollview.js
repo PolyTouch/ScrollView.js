@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.1.1
+ * Scrollview.js 1.1.2
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-06-21T15:40:51.314Z
+ * Date: 2014-06-24T13:39:12.006Z
  */
 (function (global) {
 
@@ -139,7 +139,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.1.1',
+        version: '1.1.2',
 
         /**
          * Current position on the x-axis
@@ -333,6 +333,12 @@
             // set last position
             this.scrollTo(newX, newY);
 
+            triggerEvent(this.view, 'scroll', {
+                pointerId: this._curPointer,
+                x: this.x,
+                y: this.y
+            });
+
             // start momentum animation if needed
             if (this.options.inertia && duration < 300) {
                 distance = [
@@ -367,13 +373,13 @@
                 time = Math.max(inertia[0].duration, inertia[1].duration);
             }
 
+            this._observePosition();
+
             if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
                 this.y <= 0 && this.y >= this._boundaries[1] &&
                 (newX !== this.x || newY !== this.y)) {
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
-
-                this._observePosition();
 
                 this.scrollTo(newX, newY, time,
                         newX > 0 || newX < this._boundaries[0] ||
@@ -383,11 +389,14 @@
             }
         },
 
-        _handleInertiaEnd: function () {
+        _handleInertiaEnd: function (ev) {
+            if (ev.target !== this.scroller) { // ignore bubbeling events
+                return;
+            }
+
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
-            this._observePosition(false);
             this._startBounceTransition();
         },
 
@@ -402,33 +411,41 @@
             if (this.options.bounce && (newX !== this.x || newY !== this.y)) {
                 this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
-                this._observePosition();
+
 
                 this.scrollTo(newX, newY, this.options.bounceTime);
             } else {
                 triggerEvent(this.view, 'scrollend', {
                     pointerId: this._lastPointer
                 });
+
+                this._observePosition(false);
             }
         },
 
-        _handleBounceTransitionEnd: function () {
-            this._observePosition(false);
+        _handleBounceTransitionEnd: function (ev) {
+            if (ev.target !== this.scroller) { // ignore bubbeling events
+                return;
+            }
+
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
 
             triggerEvent(this.view, 'scrollend', {
                 pointerId: this._lastPointer
             });
+
+            this._observePosition(false);
         },
 
         _forceTransitionEnd: function (suppress) {
-            this._observePosition(false);
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
+
+            this._observePosition(false);
 
             if (!suppress) {
                 triggerEvent(this.view, 'scrollcancel', {
