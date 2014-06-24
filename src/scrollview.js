@@ -389,7 +389,11 @@
             }
         },
 
-        _handleInertiaEnd: function () {
+        _handleInertiaEnd: function (ev) {
+            if (ev.target !== this.scroller) { // ignore bubbeling events
+                return;
+            }
+
             this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
@@ -419,7 +423,11 @@
             }
         },
 
-        _handleBounceTransitionEnd: function () {
+        _handleBounceTransitionEnd: function (ev) {
+            if (ev.target !== this.scroller) { // ignore bubbeling events
+                return;
+            }
+
             this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
 
