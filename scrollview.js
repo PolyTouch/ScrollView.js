@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.1.2
+ * Scrollview.js 1.1.3
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-06-24T13:39:12.006Z
+ * Date: 2014-06-25T08:29:40.297Z
  */
 (function (global) {
 
@@ -19,7 +19,7 @@
     // helpers
     var math = {
         distance: function (start, end) {
-            return Math.round(end - start);
+            return Math.floor(end - start);
         },
         velocity: function (distance, duration) {
             return Math.abs(distance) / duration; // px/ms
@@ -41,7 +41,7 @@
             }
 
             return {
-                destination: Math.round(dest),
+                destination: Math.floor(dest),
                 duration: parseFloat(t)
             };
         }
@@ -139,7 +139,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.1.2',
+        version: '1.1.3',
 
         /**
          * Current position on the x-axis
@@ -458,8 +458,8 @@
         },
 
         _transform: function (x, y) {
-            this.x = Math.round(x);
-            this.y = Math.round(y);
+            this.x = Math.floor(x);
+            this.y = Math.floor(y);
 
             var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
                 translateZ = ' translateZ(0)';
@@ -476,7 +476,7 @@
                 .match(/matrix\( *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *\)/);
 
             if (match) {
-                return [Math.round(match[5]), Math.round(match[6])];
+                return [Math.floor(match[5]), Math.floor(match[6])];
             }
 
             return null;
@@ -484,8 +484,8 @@
 
         _getBoundaries: function () {
             this._boundaries = [ // negative numbers because we scroll negative
-                -this.view.scrollWidth + this.view.clientWidth,
-                -this.view.scrollHeight + this.view.clientHeight
+                -this.scroller.scrollWidth + this.view.clientWidth,
+                -this.scroller.scrollHeight + this.view.clientHeight
             ];
         },
 
