@@ -19,7 +19,7 @@
     // helpers
     var math = {
         distance: function (start, end) {
-            return Math.round(end - start);
+            return Math.floor(end - start);
         },
         velocity: function (distance, duration) {
             return Math.abs(distance) / duration; // px/ms
@@ -41,7 +41,7 @@
             }
 
             return {
-                destination: Math.round(dest),
+                destination: Math.floor(dest),
                 duration: parseFloat(t)
             };
         }
@@ -458,8 +458,8 @@
         },
 
         _transform: function (x, y) {
-            this.x = Math.round(x);
-            this.y = Math.round(y);
+            this.x = Math.floor(x);
+            this.y = Math.floor(y);
 
             var transform = 'translate(' + this.x + 'px,' + this.y + 'px)',
                 translateZ = ' translateZ(0)';
@@ -476,7 +476,7 @@
                 .match(/matrix\( *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *, *([^, ]*) *\)/);
 
             if (match) {
-                return [Math.round(match[5]), Math.round(match[6])];
+                return [Math.floor(match[5]), Math.floor(match[6])];
             }
 
             return null;
