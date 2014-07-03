@@ -45,7 +45,12 @@
             dest = current + (s * direction);
 
             if (dest < lower || dest > upper) {
+                dest = dest < lower ? lower :
+                    dest > upper ? upper :
+                    dest;
 
+                s = math.distance(current, dest);
+                v = s / t;
             }
 
             return {
@@ -95,7 +100,8 @@
             inertiaDeceleration: opt.inertiaDeceleration || 0.0006,
 
             bounce: opt.bounce !== undefined ? opt.bounce : true,
-            bounceTime: opt.bounceTime || 600
+            bounceTime: opt.bounceTime || 600,
+            bounceDistance: opt.bounceDistance || Math.floor(Math.max(window.innerHeight, window.innerWidth) / 16)
         };
 
         // define initial state
@@ -366,10 +372,10 @@
                 ];
 
                 scrollSpace = [
-                    this.options.bounce ? this._boundaries[0] - this.view.clientWidth / 2 : this._boundaries[0],
-                    this.options.bounce ? this._boundaries[1] - this.view.clientHeight / 2 : this._boundaries[1],
-                    this.options.bounce ? 0 + this.view.clientWidth / 2 : 0,
-                    this.options.bounce ? 0 + this.view.clientHeight / 2 : 0
+                    this.options.bounce ? this._boundaries[0] - this.options.bounceDistance : this._boundaries[0],
+                    this.options.bounce ? this._boundaries[1] - this.options.bounceDistance : this._boundaries[1],
+                    this.options.bounce ? 0 + this.options.bounceDistance : 0,
+                    this.options.bounce ? 0 + this.options.bounceDistance : 0
                 ];
 
                 inertia = [
