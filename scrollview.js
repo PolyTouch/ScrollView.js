@@ -79,9 +79,11 @@
      * @param {Boolean} [options.scrollX=false]
      * @param {Boolean} [options.scrollY=true]
      * @param {Boolean} [options.inertia=true]
+     * @param {Number} [options.inertiaTime]
      * @param {Number} [options.inertiaDeceleration=0.0006]
      * @param {Boolean} [options.bounce=true]
      * @param {Number} [options.bounceTime=600]
+     * @param {Number} [options.bounceDistance]
      */
     function Sv(el, options) {
         var opt = options || {};
