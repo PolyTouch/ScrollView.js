@@ -283,22 +283,22 @@
             newY = this.y + deltaY;
 
             // consider boundaries
-            newX = newX > 0 ? // upper
+            newX = Math.floor(newX > 0 ? // upper
                 this.options.bounce ? this.x + deltaX / 3 :
                 0 :
-                newX;
-            newY = newY > 0 ? // upper
+                newX);
+            newY = Math.floor(newY > 0 ? // upper
                 this.options.bounce ? this.y + deltaY / 3 :
                 0 :
-                newY;
-            newX = newX < this._boundaries[0] ? // lower
+                newY);
+            newX = Math.floor(newX < this._boundaries[0] ? // lower
                 this.options.bounce ? this.x + deltaX / 3 :
                 this._boundaries[0] :
-                newX;
-            newY = newY < this._boundaries[1] ? // lower
+                newX);
+            newY = Math.floor(newY < this._boundaries[1] ? // lower
                 this.options.bounce ? this.y + deltaY / 3 :
                 this._boundaries[1] :
-                newY;
+                newY);
 
             // initial move
             if (!this._hasMoved) {
@@ -367,7 +367,7 @@
             this.scrollTo(newX, newY);
 
             triggerEvent(this.view, 'scroll', {
-                pointerId: this._curPointer,
+                pointerId: this._lastPointer,
                 x: this.x,
                 y: this.y
             });
@@ -548,8 +548,8 @@
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
                         triggerEvent(this.view, 'scroll', {
                             pointerId: this._lastPointer,
-                            x: pos[0],
-                            y: pos[1]
+                            x: Math.floor(pos[0]),
+                            y: Math.floor(pos[1])
                         });
                     }
                     lastPos = pos;
