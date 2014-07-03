@@ -507,12 +507,12 @@
         },
 
         _observePosition: function (cond) {
-            var obeservationLoop, lastPos = this._getTransformPosition();
+            var observationLoop, lastPos = this._getTransformPosition();
 
             if (cond === false) {
                 (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
             } else {
-                obeservationLoop = function () {
+                observationLoop = function () {
                     var pos = this._getTransformPosition();
 
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
@@ -524,10 +524,10 @@
                     }
                     lastPos = pos;
 
-                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
                 };
 
-                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
             }
 
         },
