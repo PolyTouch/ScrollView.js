@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-06-25T08:29:40.297Z
+ * Date: 2014-07-03T09:48:19.374Z
  */
 (function (global) {
 
@@ -15,6 +15,11 @@
         quadratic: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         circular: 'cubic-bezier(0.1, 0.57, 0.1, 1)'
     };
+
+    // const
+    var MINIMUM_SPEED = 0.01,
+        MAXIMUM_SPEED = 1.5,
+        MAXIMUM_INERTIA_TIME = 1500;
 
     // helpers
     var math = {
@@ -27,17 +32,25 @@
         direction: function (delta) {
             return delta < 0 ? -1 : delta > 0 ? 1 : 0;
         },
-        inertia: function (current, direction, v, lower, upper, a) {
-            var dest, t;
+        inertia: function (current, direction, v, lower, upper, a, t) {
+            var dest, s;
 
-            t = v / a; // a = v / t
-            dest = current + (v * (t * t) * 0.5 * a * direction);
+            if (Math.abs(v) < MINIMUM_SPEED) {
+                t = 0;
+                s = current;
+            } else {
+                s = v * (1 - Math.pow(a, t + 1)) / (1 - a);
+            }
+
+            dest = current + (s * direction);
 
             if (dest < lower || dest > upper) {
                 dest = dest < lower ? lower :
                     dest > upper ? upper :
                     dest;
-                t = Math.sqrt(Math.abs((dest - current) / (v * 0.5 * a * direction)));
+
+                s = math.distance(current, dest);
+                t = s / Math.min(v, MAXIMUM_SPEED);
             }
 
             return {
@@ -83,10 +96,12 @@
             scrollY: opt.scrollY !== undefined ? opt.scrollY : true,
 
             inertia: opt.inertia !== undefined ? opt.inertia : true,
+            inertiaTime: opt.inertiaTime || Math.min(window.innerHeight, window.innerWidth) * 1.5, // in ms
             inertiaDeceleration: opt.inertiaDeceleration || 0.0006,
 
             bounce: opt.bounce !== undefined ? opt.bounce : true,
-            bounceTime: opt.bounceTime || 600
+            bounceTime: opt.bounceTime || 600,
+            bounceDistance: opt.bounceDistance || Math.floor(Math.max(window.innerHeight, window.innerWidth) / 8)
         };
 
         // define initial state
@@ -289,7 +304,7 @@
             }
 
             // save new keyframe every 300ms
-            if (timestamp - this._lastKeyFrame.timestamp > 300) {
+            if (timestamp - this._lastKeyFrame.timestamp > 150) {
                 this._lastKeyFrame = {
                     timestamp: timestamp,
                     x: newX,
@@ -340,7 +355,7 @@
             });
 
             // start momentum animation if needed
-            if (this.options.inertia && duration < 300) {
+            if (this.options.inertia && duration < 150) {
                 distance = [
                     math.distance(this._lastKeyFrame.x, this.x),
                     math.distance(this._lastKeyFrame.y, this.y)
@@ -357,15 +372,19 @@
                 ];
 
                 scrollSpace = [
-                    this.options.bounce ? this._boundaries[0] - this.view.clientWidth / 2 : this._boundaries[0],
-                    this.options.bounce ? this._boundaries[1] - this.view.clientHeight / 2 : this._boundaries[1],
-                    this.options.bounce ? 0 + this.view.clientWidth / 2 : 0,
-                    this.options.bounce ? 0 + this.view.clientHeight / 2 : 0
+                    this.options.bounce ? this._boundaries[0] - this.options.bounceDistance : this._boundaries[0],
+                    this.options.bounce ? this._boundaries[1] - this.options.bounceDistance : this._boundaries[1],
+                    this.options.bounce ? 0 + this.options.bounceDistance : 0,
+                    this.options.bounce ? 0 + this.options.bounceDistance : 0
                 ];
 
                 inertia = [
-                    math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2], this.options.inertiaDeceleration),
-                    math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3], this.options.inertiaDeceleration)
+                    math.inertia(this.x, direction[0], velocity[0], scrollSpace[0], scrollSpace[2],
+                        1 - this.options.inertiaDeceleration,
+                        this.options.inertiaTime > MAXIMUM_INERTIA_TIME ? MAXIMUM_INERTIA_TIME : this.options.inertiaTime),
+                    math.inertia(this.y, direction[1], velocity[1], scrollSpace[1], scrollSpace[3],
+                        1 - this.options.inertiaDeceleration,
+                        this.options.inertiaTime > MAXIMUM_INERTIA_TIME ? MAXIMUM_INERTIA_TIME : this.options.inertiaTime)
                 ];
 
                 newX = inertia[0].destination;
@@ -381,9 +400,7 @@
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
-                this.scrollTo(newX, newY, time,
-                        newX > 0 || newX < this._boundaries[0] ||
-                        newY > 0 || newY < this._boundaries[1] ? easingFn.quadratic : null);
+                this.scrollTo(newX, newY, time);
             } else {
                 this._startBounceTransition();
             }

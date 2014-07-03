@@ -27,7 +27,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/scrollview.js",
-            "line": 60,
+            "line": 73,
             "is_constructor": 1,
             "params": [
                 {
@@ -98,7 +98,7 @@
     "classitems": [
         {
             "file": "src/scrollview.js",
-            "line": 112,
+            "line": 127,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollstart",
@@ -123,7 +123,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 119,
+            "line": 134,
             "description": "Fired while scrolling",
             "itemtype": "event",
             "name": "scroll",
@@ -148,7 +148,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 126,
+            "line": 141,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollcancel",
@@ -163,7 +163,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 131,
+            "line": 146,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollend",
@@ -178,7 +178,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 137,
+            "line": 152,
             "description": "Version of the ScrollView",
             "itemtype": "property",
             "name": "version",
@@ -187,7 +187,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 144,
+            "line": 159,
             "description": "Current position on the x-axis",
             "itemtype": "property",
             "name": "x",
@@ -196,7 +196,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 151,
+            "line": 166,
             "description": "Current position on the y-axis",
             "itemtype": "property",
             "name": "y",
@@ -205,14 +205,14 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 158,
+            "line": 173,
             "itemtype": "method",
             "name": "destroy",
             "class": "ScrollView"
         },
         {
             "file": "src/scrollview.js",
-            "line": 166,
+            "line": 181,
             "itemtype": "method",
             "name": "enable",
             "params": [
@@ -227,7 +227,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 174,
+            "line": 189,
             "itemtype": "method",
             "name": "cancel",
             "params": [
@@ -242,7 +242,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 190,
+            "line": 205,
             "itemtype": "method",
             "name": "scrollTo",
             "params": [

@@ -33,7 +33,7 @@
             return delta < 0 ? -1 : delta > 0 ? 1 : 0;
         },
         inertia: function (current, direction, v, lower, upper, a, t) {
-            var dest, s, t;
+            var dest, s;
 
             if (Math.abs(v) < MINIMUM_SPEED) {
                 t = 0;
