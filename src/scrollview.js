@@ -13,12 +13,12 @@
 
     var easingFn = {
         quadratic: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-        circular: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
-        inertia: 'cubic-bezier(0.103, 0.389, 0.307, 0.966)'
+        circular: 'cubic-bezier(0.1, 0.57, 0.1, 1)'
     };
 
     // const
     var MINIMUM_SPEED = 0.01,
+        MAXIMUM_SPEED = 1.5,
         MAXIMUM_INERTIA_TIME = 1500;
 
     // helpers
@@ -50,7 +50,7 @@
                     dest;
 
                 s = math.distance(current, dest);
-                v = s / t;
+                t = s / Math.min(v, MAXIMUM_SPEED);
             }
 
             return {
@@ -101,7 +101,7 @@
 
             bounce: opt.bounce !== undefined ? opt.bounce : true,
             bounceTime: opt.bounceTime || 600,
-            bounceDistance: opt.bounceDistance || Math.floor(Math.max(window.innerHeight, window.innerWidth) / 16)
+            bounceDistance: opt.bounceDistance || Math.floor(Math.max(window.innerHeight, window.innerWidth) / 8)
         };
 
         // define initial state
@@ -400,9 +400,7 @@
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
-                this.scrollTo(newX, newY, time,
-                        newX > 0 || newX < this._boundaries[0] ||
-                        newY > 0 || newY < this._boundaries[1] ? easingFn.inertia : null);
+                this.scrollTo(newX, newY, time);
             } else {
                 this._startBounceTransition();
             }
