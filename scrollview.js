@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.2.3
+ * Scrollview.js 1.3.0
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-07-03T14:06:54.013Z
+ * Date: 2014-07-03T14:51:54.491Z
  */
 (function (global) {
 
@@ -79,6 +79,7 @@
      * @param {HTMLElement|String} el
      * @param {Object} [options]
      * @param {Number[]} [options.start=[0,0]]
+     * @param {Number[]} [options.limit=[null,null,0,0]
      * @param {Boolean} [options.scrollX=false]
      * @param {Boolean} [options.scrollY=true]
      * @param {Boolean} [options.inertia=true]
@@ -96,6 +97,7 @@
 
         this.options = {
             start: opt.start || [0, 0],
+            limit: [null, null, 0, 0],
 
             scrollX: opt.scrollX !== undefined ? opt.scrollX : false,
             scrollY: opt.scrollY !== undefined ? opt.scrollY : true,
@@ -159,7 +161,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.2.3',
+        version: '1.3.0',
 
         /**
          * Current position on the x-axis
@@ -285,13 +287,13 @@
             newY = this.y + deltaY;
 
             // consider boundaries
-            newX = Math.floor(newX > 0 ? // upper
+            newX = Math.floor(newX > this._boundaries[2] ? // upper
                 this.options.bounce ? this.x + deltaX / 3 :
-                0 :
+                this._boundaries[2] :
                 newX);
-            newY = Math.floor(newY > 0 ? // upper
+            newY = Math.floor(newY > this._boundaries[3] ? // upper
                 this.options.bounce ? this.y + deltaY / 3 :
-                0 :
+                this._boundaries[3] :
                 newY);
             newX = Math.floor(newX < this._boundaries[0] ? // lower
                 this.options.bounce ? this.x + deltaX / 3 :
@@ -394,8 +396,8 @@
                 scrollSpace = [
                     this.options.bounce ? this._boundaries[0] - this.options.bounceDistance : this._boundaries[0],
                     this.options.bounce ? this._boundaries[1] - this.options.bounceDistance : this._boundaries[1],
-                    this.options.bounce ? 0 + this.options.bounceDistance : 0,
-                    this.options.bounce ? 0 + this.options.bounceDistance : 0
+                    this.options.bounce ? this._boundaries[2] + this.options.bounceDistance : this._boundaries[2],
+                    this.options.bounce ? this._boundaries[3] + this.options.bounceDistance : this._boundaries[3]
                 ];
 
                 inertia = [
@@ -438,10 +440,10 @@
         },
 
         _startBounceTransition: function () {
-            var newX = this.x > 0 ? 0 :
+            var newX = this.x > this._boundaries[2] ? this._boundaries[2] :
                 this.x < this._boundaries[0] ? this._boundaries[0] :
                 this.x,
-                newY = this.y > 0 ? 0 :
+                newY = this.y > this._boundaries[3] ? this._boundaries[3] :
                 this.y < this._boundaries[1] ? this._boundaries[1] :
                 this.y;
 
@@ -526,15 +528,17 @@
 
         _getBoundaries: function () {
             this._boundaries = [ // negative numbers because we scroll negative, 0 if the scroller is smaller than the view
-                Math.min(0, -this.scroller.scrollWidth + this.view.clientWidth),
-                Math.min(0, -this.scroller.scrollHeight + this.view.clientHeight)
+                Math.min(this.options.limit[0] || 0, -this.scroller.scrollWidth + this.view.clientWidth),
+                Math.min(this.options.limit[1] || 0, -this.scroller.scrollHeight + this.view.clientHeight),
+                this.options.limit[2],
+                this.options.limit[3]
             ];
         },
 
         _isOutOfBoundaries: function (x, y) {
-            return !((x || this.x) <= 0 &&
+            return !((x || this.x) <= this._boundaries[2] &&
                 (x || this.x) >= this._boundaries[0] && // not already in bouncing state
-                (y || this.y) <= 0 &&
+                (y || this.y) <= this._boundaries[3] &&
                 (y || this.y) >= this._boundaries[1]);
         },
 
