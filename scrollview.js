@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.2.1
+ * Scrollview.js 1.2.2
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-07-03T10:12:33.271Z
+ * Date: 2014-07-03T12:06:55.396Z
  */
 (function (global) {
 
@@ -19,6 +19,7 @@
     // const
     var MINIMUM_SPEED = 0.01,
         MAXIMUM_SPEED = 1.5,
+        MINIMUM_INERTIA_TIME = 325,
         MAXIMUM_INERTIA_TIME = 1500;
 
     // helpers
@@ -52,6 +53,8 @@
                 s = math.distance(current, dest);
                 t = s / Math.min(v, MAXIMUM_SPEED);
             }
+
+            t = Math.max(t, MINIMUM_INERTIA_TIME);
 
             return {
                 destination: Math.floor(dest),
@@ -154,7 +157,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.2.1',
+        version: '1.2.2',
 
         /**
          * Current position on the x-axis
@@ -233,8 +236,18 @@
             this._getBoundaries();
 
             // make sure it is not moving anymore
-            this._forceTransitionEnd(true);
+            this._forceTransitionEnd(!this._inTransition);
             this._lastPointer = ev.pointerId; // memorize the pointer (incl transitions)
+
+            // was stopped in a bounce transition
+            if (this._isOutOfBoundaries.apply(this, this._getTransformPosition())) {
+                this._hasMoved = true;
+                triggerEvent(this.view, 'scrollstart', {
+                    pointerId: this._curPointer,
+                    x: this.x,
+                    y: this.y
+                });
+            }
 
             // previous point (based on pointer) for delta calculation
             this._lastPoint = {
@@ -270,22 +283,22 @@
             newY = this.y + deltaY;
 
             // consider boundaries
-            newX = newX > 0 ? // upper
+            newX = Math.floor(newX > 0 ? // upper
                 this.options.bounce ? this.x + deltaX / 3 :
                 0 :
-                newX;
-            newY = newY > 0 ? // upper
+                newX);
+            newY = Math.floor(newY > 0 ? // upper
                 this.options.bounce ? this.y + deltaY / 3 :
                 0 :
-                newY;
-            newX = newX < this._boundaries[0] ? // lower
+                newY);
+            newX = Math.floor(newX < this._boundaries[0] ? // lower
                 this.options.bounce ? this.x + deltaX / 3 :
                 this._boundaries[0] :
-                newX;
-            newY = newY < this._boundaries[1] ? // lower
+                newX);
+            newY = Math.floor(newY < this._boundaries[1] ? // lower
                 this.options.bounce ? this.y + deltaY / 3 :
                 this._boundaries[1] :
-                newY;
+                newY);
 
             // initial move
             if (!this._hasMoved) {
@@ -309,7 +322,7 @@
             };
 
             // save new keyframe every 300ms
-            if (timestamp - this._lastKeyFrame.timestamp > 150) {
+            if (timestamp - this._lastKeyFrame.timestamp > 300) {
                 this._lastKeyFrame = {
                     timestamp: timestamp,
                     x: newX,
@@ -354,13 +367,13 @@
             this.scrollTo(newX, newY);
 
             triggerEvent(this.view, 'scroll', {
-                pointerId: this._curPointer,
+                pointerId: this._lastPointer,
                 x: this.x,
                 y: this.y
             });
 
             // start momentum animation if needed
-            if (this.options.inertia && duration < 150) {
+            if (this.options.inertia && duration < 300) {
                 distance = [
                     math.distance(this._lastKeyFrame.x, this.x),
                     math.distance(this._lastKeyFrame.y, this.y)
@@ -399,9 +412,9 @@
 
             this._observePosition();
 
-            if (this.x <= 0 && this.x >= this._boundaries[0] && // not already in bouncing state
-                this.y <= 0 && this.y >= this._boundaries[1] &&
-                (newX !== this.x || newY !== this.y)) {
+            if (!this._isOutOfBoundaries() && (newX !== this.x || newY !== this.y)) {
+                this._inTransition = true;
+
                 this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
@@ -430,6 +443,8 @@
                 this.y < this._boundaries[1] ? this._boundaries[1] :
                 this.y;
 
+            this._inTransition = true;
+
             if (this.options.bounce && (newX !== this.x || newY !== this.y)) {
                 this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
@@ -442,6 +457,7 @@
                 });
 
                 this._observePosition(false);
+                this._inTransition = false;
             }
         },
 
@@ -458,6 +474,7 @@
             });
 
             this._observePosition(false);
+            this._inTransition = false;
         },
 
         _forceTransitionEnd: function (suppress) {
@@ -468,6 +485,7 @@
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
 
             this._observePosition(false);
+            this._inTransition = false;
 
             if (!suppress) {
                 triggerEvent(this.view, 'scrollcancel', {
@@ -505,10 +523,17 @@
         },
 
         _getBoundaries: function () {
-            this._boundaries = [ // negative numbers because we scroll negative
-                -this.scroller.scrollWidth + this.view.clientWidth,
-                -this.scroller.scrollHeight + this.view.clientHeight
+            this._boundaries = [ // negative numbers because we scroll negative, 0 if the scroller is smaller than the view
+                Math.min(0, -this.scroller.scrollWidth + this.view.clientWidth),
+                Math.min(0, -this.scroller.scrollHeight + this.view.clientHeight)
             ];
+        },
+
+        _isOutOfBoundaries: function (x, y) {
+            return !((x || this.x) <= 0 &&
+                (x || this.x) >= this._boundaries[0] && // not already in bouncing state
+                (y || this.y) <= 0 &&
+                (y || this.y) >= this._boundaries[1]);
         },
 
         _observePosition: function (cond) {
@@ -523,8 +548,8 @@
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
                         triggerEvent(this.view, 'scroll', {
                             pointerId: this._lastPointer,
-                            x: pos[0],
-                            y: pos[1]
+                            x: Math.floor(pos[0]),
+                            y: Math.floor(pos[1])
                         });
                     }
                     lastPos = pos;
