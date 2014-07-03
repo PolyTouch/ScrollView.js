@@ -505,9 +505,9 @@
         },
 
         _getBoundaries: function () {
-            this._boundaries = [ // negative numbers because we scroll negative
-                -this.scroller.scrollWidth + this.view.clientWidth,
-                -this.scroller.scrollHeight + this.view.clientHeight
+            this._boundaries = [ // negative numbers because we scroll negative, 0 if the scroller is smaller than the view
+                Math.min(0, -this.scroller.scrollWidth + this.view.clientWidth),
+                Math.min(0, -this.scroller.scrollHeight + this.view.clientHeight)
             ];
         },
 
