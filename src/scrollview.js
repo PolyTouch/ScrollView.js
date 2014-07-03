@@ -266,12 +266,6 @@
                 timestamp = new Date().getTime(),
                 newX, newY;
 
-            this._lastPoint = {
-                timestamp: timestamp,
-                x: ev.pageX,
-                y: ev.pageY
-            };
-
             newX = this.x + deltaX;
             newY = this.y + deltaY;
 
@@ -295,6 +289,11 @@
 
             // initial move
             if (!this._hasMoved) {
+
+                if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                    return;
+                }
+
                 this._hasMoved = true;
                 triggerEvent(this.view, 'scrollstart', {
                     pointerId: this._curPointer,
@@ -302,6 +301,12 @@
                     y: this.y
                 });
             }
+
+            this._lastPoint = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            };
 
             // save new keyframe every 300ms
             if (timestamp - this._lastKeyFrame.timestamp > 150) {

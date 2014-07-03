@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.1.3</em>
+            <em>API Docs for: 1.2.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -354,12 +354,6 @@
                 timestamp = new Date().getTime(),
                 newX, newY;
 
-            this._lastPoint = {
-                timestamp: timestamp,
-                x: ev.pageX,
-                y: ev.pageY
-            };
-
             newX = this.x + deltaX;
             newY = this.y + deltaY;
 
@@ -383,6 +377,11 @@
 
             // initial move
             if (!this._hasMoved) {
+
+                if (Math.abs(deltaX) &lt; 10 &amp;&amp; Math.abs(deltaY) &lt; 10) {
+                    return;
+                }
+
                 this._hasMoved = true;
                 triggerEvent(this.view, &#x27;scrollstart&#x27;, {
                     pointerId: this._curPointer,
@@ -390,6 +389,12 @@
                     y: this.y
                 });
             }
+
+            this._lastPoint = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            };
 
             // save new keyframe every 300ms
             if (timestamp - this._lastKeyFrame.timestamp &gt; 150) {
@@ -595,12 +600,12 @@
         },
 
         _observePosition: function (cond) {
-            var obeservationLoop, lastPos = this._getTransformPosition();
+            var observationLoop, lastPos = this._getTransformPosition();
 
             if (cond === false) {
                 (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
             } else {
-                obeservationLoop = function () {
+                observationLoop = function () {
                     var pos = this._getTransformPosition();
 
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
@@ -612,10 +617,10 @@
                     }
                     lastPos = pos;
 
-                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
                 };
 
-                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
             }
 
         },

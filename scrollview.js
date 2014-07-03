@@ -1,5 +1,5 @@
 /*!
- * Scrollview.js 1.1.3
+ * Scrollview.js 1.2.1
  * http://github.com/PolyTouch/ScrollView.js
  *
  *
@@ -7,7 +7,7 @@
  * Released under the Apache License v2
  *
  * Author: Damien Antipa
- * Date: 2014-07-03T09:48:19.374Z
+ * Date: 2014-07-03T10:12:33.271Z
  */
 (function (global) {
 
@@ -79,11 +79,9 @@
      * @param {Boolean} [options.scrollX=false]
      * @param {Boolean} [options.scrollY=true]
      * @param {Boolean} [options.inertia=true]
-     * @param {Number} [options.inertiaTime]
      * @param {Number} [options.inertiaDeceleration=0.0006]
      * @param {Boolean} [options.bounce=true]
      * @param {Number} [options.bounceTime=600]
-     * @param {Number} [options.bounceDistance]
      */
     function Sv(el, options) {
         var opt = options || {};
@@ -156,7 +154,7 @@
          * @property version
          * @type {String}
          */
-        version: '1.1.3',
+        version: '1.2.1',
 
         /**
          * Current position on the x-axis
@@ -268,12 +266,6 @@
                 timestamp = new Date().getTime(),
                 newX, newY;
 
-            this._lastPoint = {
-                timestamp: timestamp,
-                x: ev.pageX,
-                y: ev.pageY
-            };
-
             newX = this.x + deltaX;
             newY = this.y + deltaY;
 
@@ -297,6 +289,11 @@
 
             // initial move
             if (!this._hasMoved) {
+
+                if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                    return;
+                }
+
                 this._hasMoved = true;
                 triggerEvent(this.view, 'scrollstart', {
                     pointerId: this._curPointer,
@@ -304,6 +301,12 @@
                     y: this.y
                 });
             }
+
+            this._lastPoint = {
+                timestamp: timestamp,
+                x: ev.pageX,
+                y: ev.pageY
+            };
 
             // save new keyframe every 300ms
             if (timestamp - this._lastKeyFrame.timestamp > 150) {
@@ -509,12 +512,12 @@
         },
 
         _observePosition: function (cond) {
-            var obeservationLoop, lastPos = this._getTransformPosition();
+            var observationLoop, lastPos = this._getTransformPosition();
 
             if (cond === false) {
                 (window.cancelAnimationFrame || window.webkitCancelAnimationFrame)(this._observeId);
             } else {
-                obeservationLoop = function () {
+                observationLoop = function () {
                     var pos = this._getTransformPosition();
 
                     if (lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
@@ -526,10 +529,10 @@
                     }
                     lastPos = pos;
 
-                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                    this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
                 };
 
-                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(obeservationLoop.bind(this));
+                this._observeId = (window.requestAnimationFrame || window.webkitRequestAnimationFrame)(observationLoop.bind(this));
             }
 
         },
