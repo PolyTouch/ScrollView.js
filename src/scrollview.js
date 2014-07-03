@@ -82,9 +82,11 @@
      * @param {Boolean} [options.scrollX=false]
      * @param {Boolean} [options.scrollY=true]
      * @param {Boolean} [options.inertia=true]
+     * @param {Number} [options.inertiaTime]
      * @param {Number} [options.inertiaDeceleration=0.0006]
      * @param {Boolean} [options.bounce=true]
-     * @param {Number} [options.bounceTime=600]
+     * @param {Number} [options.bounceTime=400]
+     * @param {Number} [options.bounceDistance]
      */
     function Sv(el, options) {
         var opt = options || {};
@@ -103,7 +105,7 @@
             inertiaDeceleration: opt.inertiaDeceleration || 0.0006,
 
             bounce: opt.bounce !== undefined ? opt.bounce : true,
-            bounceTime: opt.bounceTime || 600,
+            bounceTime: opt.bounceTime || 400,
             bounceDistance: opt.bounceDistance || Math.floor(Math.max(window.innerHeight, window.innerWidth) / 8)
         };
 

@@ -2,7 +2,7 @@
     "project": {
         "name": "scrollview",
         "description": "ScrollView to enable JS controlled scrolling",
-        "version": "1.2.2",
+        "version": "1.2.3",
         "url": "http://damien.antipa.at"
     },
     "files": {
@@ -70,6 +70,12 @@
                             "optdefault": "true"
                         },
                         {
+                            "name": "inertiaTime",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
                             "name": "inertiaDeceleration",
                             "description": "",
                             "type": "Number",
@@ -88,7 +94,13 @@
                             "description": "",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "600"
+                            "optdefault": "400"
+                        },
+                        {
+                            "name": "bounceDistance",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
                         }
                     ]
                 }
@@ -98,7 +110,7 @@
     "classitems": [
         {
             "file": "src/scrollview.js",
-            "line": 130,
+            "line": 132,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollstart",
@@ -123,7 +135,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 137,
+            "line": 139,
             "description": "Fired while scrolling",
             "itemtype": "event",
             "name": "scroll",
@@ -148,7 +160,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 144,
+            "line": 146,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollcancel",
@@ -163,7 +175,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 149,
+            "line": 151,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollend",
@@ -178,7 +190,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 155,
+            "line": 157,
             "description": "Version of the ScrollView",
             "itemtype": "property",
             "name": "version",
@@ -187,7 +199,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 162,
+            "line": 164,
             "description": "Current position on the x-axis",
             "itemtype": "property",
             "name": "x",
@@ -196,7 +208,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 169,
+            "line": 171,
             "description": "Current position on the y-axis",
             "itemtype": "property",
             "name": "y",
@@ -205,14 +217,14 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 176,
+            "line": 178,
             "itemtype": "method",
             "name": "destroy",
             "class": "ScrollView"
         },
         {
             "file": "src/scrollview.js",
-            "line": 184,
+            "line": 186,
             "itemtype": "method",
             "name": "enable",
             "params": [
@@ -227,7 +239,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 192,
+            "line": 194,
             "itemtype": "method",
             "name": "cancel",
             "params": [
@@ -242,7 +254,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 208,
+            "line": 210,
             "itemtype": "method",
             "name": "scrollTo",
             "params": [
