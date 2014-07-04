@@ -1,10 +1,10 @@
 /*!
- * Scrollview.js @@version
- * http://github.com/PolyTouch/ScrollView.js
+ * @@name @@version
+ * @@repository.url
  *
  *
- * Copyright 2014 Adobe Systems Incorporated
- * Released under the Apache License v2
+ * Copyright @@year @@copyright
+ * Released under the @@licenses
  *
  * Author: @@author
  * Date: @@date
@@ -89,7 +89,7 @@
      * @param {Number} [options.bounceTime=400]
      * @param {Number} [options.bounceDistance]
      */
-    function Sv(el, options) {
+    function ScrollView(el, options) {
         var opt = options || {};
 
         this.view = typeof el === 'string' ? document.querySelector(el) : el;
@@ -129,7 +129,7 @@
         this.scrollTo(this.options.start[0], this.options.start[1]);
     }
 
-    Sv.prototype = {
+    ScrollView.prototype = {
 
         /**
          * Fired when a user initiates a scroll operation.
@@ -571,6 +571,6 @@
 
     };
 
-    global.ScrollView = Sv;
+    global.ScrollView = ScrollView;
 
 }(window.polyTouch || window));

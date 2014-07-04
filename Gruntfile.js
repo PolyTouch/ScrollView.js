@@ -1,21 +1,23 @@
 module.exports = function(grunt) {
 
     var pkg = require('./package.json'),
-        buildTime =  new Date().toISOString();
+        buildTime =  new Date();
 
     grunt.initConfig({
+        outputName: 'scrollview',
         replace: {
             build: {
                 files: [{
                     src: ['src/scrollview.js'],
-                    dest: 'scrollview.js'
+                    dest: '<%= outputName %>.js'
                 }],
                 options: {
                     patterns: [{
+                        json: pkg
+                    }, {
                         json: {
-                            version: pkg.version,
-                            date: buildTime,
-                            author: pkg.author
+                            date: buildTime.toISOString(),
+                            year: buildTime.getFullYear()
                         }
                     }]
                 }
@@ -26,7 +28,7 @@ module.exports = function(grunt) {
                 jshintrc: '.jshintrc',
                 reporter: require('jshint-stylish')
             },
-            all: ['scrollview.js']
+            all: ['<%= outputName %>.js']
         },
         uglify: {
             min: {
@@ -34,7 +36,7 @@ module.exports = function(grunt) {
                     preserveComments: 'some'
                 },
                 files : {
-                    'scrollview.min.js' : ['scrollview.js']
+                    '<%= outputName %>.min.js' : ['<%= outputName %>.js']
                 }
             }
         },
@@ -45,7 +47,8 @@ module.exports = function(grunt) {
                 version: pkg.version,
                 url: pkg.homepage,
                 options: {
-                    paths: 'src/',
+                    ignorePaths: ['src/', 'example', 'docs', 'node_modules'],
+                    paths: '.',
                     outdir: 'docs/'
                 }
             }
