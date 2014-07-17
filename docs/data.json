@@ -1,13 +1,27 @@
 {
     "project": {
-        "name": "scrollview",
-        "description": "ScrollView to enable JS controlled scrolling",
-        "version": "1.3.0",
+        "name": "Scrollview.js",
+        "description": "ScrollView is a Javascript library which makes containers scrollable",
+        "version": "1.3.1",
         "url": "http://damien.antipa.at"
     },
     "files": {
+        "example/pointerevents.js": {
+            "name": "example/pointerevents.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/scrollview.js": {
             "name": "src/scrollview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "scrollview.js": {
+            "name": "scrollview.js",
             "modules": {},
             "classes": {
                 "ScrollView": 1
@@ -26,8 +40,8 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "src/scrollview.js",
-            "line": 76,
+            "file": "scrollview.js",
+            "line": 75,
             "is_constructor": 1,
             "params": [
                 {
@@ -116,8 +130,130 @@
     },
     "classitems": [
         {
+            "file": "example/pointerevents.js",
+            "line": 184,
+            "description": "This is the constructor for new PointerEvents.\n\nNew Pointer Events must be given a type, and an optional dictionary of\ninitialization properties.\n\nDue to certain platform requirements, events returned from the constructor\nidentify as MouseEvents.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "inType",
+                    "description": "The type of the event to create.",
+                    "type": "String"
+                },
+                {
+                    "name": "inDict",
+                    "description": "An optional dictionary of initial event properties.",
+                    "type": "Object",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "A new PointerEvent of type `inType` and initialized with properties from `inDict`.",
+                "type": "Event"
+            },
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 342,
+            "description": "This module implements an map of pointer states",
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 474,
+            "description": "This module is for normalizing events. Mouse and Touch events will be\ncollected here, and fire PointerEvents that have the same semantics, no\nmatter the source.\nEvents fired:\n  - pointerdown: a pointing is added\n  - pointerup: a pointer is removed\n  - pointermove: a pointer is moved\n  - pointerover: a pointer crosses into an element\n  - pointerout: a pointer leaves an element\n  - pointercancel: a pointer will no longer generate events",
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 495,
+            "description": "Add a new event source that will generate pointer events.\n\n`inSource` must contain an array of event names named `events`, and\nfunctions with the names specified in the `events` array.",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "A name for the event source",
+                    "type": "String"
+                },
+                {
+                    "name": "source",
+                    "description": "A new source of platform events.",
+                    "type": "Object"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 612,
+            "description": "Creates a new Event of type `inType`, based on the information in\n`inEvent`.",
+            "params": [
+                {
+                    "name": "inType",
+                    "description": "A string representing the type of event to create",
+                    "type": "String"
+                },
+                {
+                    "name": "inEvent",
+                    "description": "A platform event with a target",
+                    "type": "Event"
+                }
+            ],
+            "return": {
+                "description": "A PointerEvent of type `inType`",
+                "type": "Event"
+            },
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 637,
+            "description": "Returns a snapshot of inEvent, with writable properties.",
+            "params": [
+                {
+                    "name": "inEvent",
+                    "description": "An event that contains properties to copy.",
+                    "type": "Event"
+                }
+            ],
+            "return": {
+                "description": "An object containing shallow copies of `inEvent`'s\n   properties.",
+                "type": "Object"
+            },
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 699,
+            "description": "Dispatches the event to its target.",
+            "params": [
+                {
+                    "name": "inEvent",
+                    "description": "The event to be dispatched.",
+                    "type": "Event"
+                }
+            ],
+            "return": {
+                "description": "True if an event handler returns true, false otherwise.",
+                "type": "Boolean"
+            },
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 721,
+            "description": "This module uses Mutation Observers to dynamically adjust which nodes will\ngenerate Pointer Events.\n\nAll nodes that wish to generate Pointer Events must have the attribute\n`touch-action` set to `none`.",
+            "class": "ScrollView"
+        },
+        {
+            "file": "example/pointerevents.js",
+            "line": 1348,
+            "description": "This module contains the handlers for native platform events.\nFrom here, the dispatcher is called to create unified pointer events.\nIncluded are touch events (v1), mouse events, and MSPointerEvents.",
+            "class": "ScrollView"
+        },
+        {
             "file": "src/scrollview.js",
-            "line": 134,
+            "line": 133,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollstart",
@@ -142,7 +278,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 141,
+            "line": 140,
             "description": "Fired while scrolling",
             "itemtype": "event",
             "name": "scroll",
@@ -167,7 +303,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 148,
+            "line": 147,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollcancel",
@@ -182,7 +318,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 153,
+            "line": 152,
             "description": "Fired when a user initiates a scroll operation.",
             "itemtype": "event",
             "name": "scrollend",
@@ -197,7 +333,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 159,
+            "line": 158,
             "description": "Version of the ScrollView",
             "itemtype": "property",
             "name": "version",
@@ -206,7 +342,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 166,
+            "line": 165,
             "description": "Current position on the x-axis",
             "itemtype": "property",
             "name": "x",
@@ -215,7 +351,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 173,
+            "line": 172,
             "description": "Current position on the y-axis",
             "itemtype": "property",
             "name": "y",
@@ -224,14 +360,14 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 180,
+            "line": 179,
             "itemtype": "method",
             "name": "destroy",
             "class": "ScrollView"
         },
         {
             "file": "src/scrollview.js",
-            "line": 188,
+            "line": 187,
             "itemtype": "method",
             "name": "enable",
             "params": [
@@ -246,7 +382,7 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 196,
+            "line": 195,
             "itemtype": "method",
             "name": "cancel",
             "params": [
@@ -261,7 +397,183 @@
         },
         {
             "file": "src/scrollview.js",
-            "line": 212,
+            "line": 211,
+            "itemtype": "method",
+            "name": "scrollTo",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "time",
+                    "description": "",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "0"
+                },
+                {
+                    "name": "easing",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 133,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollstart",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 140,
+            "description": "Fired while scrolling",
+            "itemtype": "event",
+            "name": "scroll",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "detail.y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 147,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollcancel",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 152,
+            "description": "Fired when a user initiates a scroll operation.",
+            "itemtype": "event",
+            "name": "scrollend",
+            "params": [
+                {
+                    "name": "detail.pointerId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 158,
+            "description": "Version of the ScrollView",
+            "itemtype": "property",
+            "name": "version",
+            "type": "{String}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 165,
+            "description": "Current position on the x-axis",
+            "itemtype": "property",
+            "name": "x",
+            "type": "{Number}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 172,
+            "description": "Current position on the y-axis",
+            "itemtype": "property",
+            "name": "y",
+            "type": "{Number}",
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 179,
+            "itemtype": "method",
+            "name": "destroy",
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 187,
+            "itemtype": "method",
+            "name": "enable",
+            "params": [
+                {
+                    "name": "cond",
+                    "description": "false to disable",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 195,
+            "itemtype": "method",
+            "name": "cancel",
+            "params": [
+                {
+                    "name": "pointerId",
+                    "description": "cancel if a specific pointer holds the view, or null to cancel anyways",
+                    "type": "Number",
+                    "optional": true
+                }
+            ],
+            "class": "ScrollView"
+        },
+        {
+            "file": "scrollview.js",
+            "line": 211,
             "itemtype": "method",
             "name": "scrollTo",
             "params": [
@@ -292,5 +604,42 @@
             "class": "ScrollView"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "Missing item type\nThis is the constructor for new PointerEvents.\n\nNew Pointer Events must be given a type, and an optional dictionary of\ninitialization properties.\n\nDue to certain platform requirements, events returned from the constructor\nidentify as MouseEvents.",
+            "line": " example/pointerevents.js:184"
+        },
+        {
+            "message": "Missing item type\nThis module implements an map of pointer states",
+            "line": " example/pointerevents.js:342"
+        },
+        {
+            "message": "Missing item type\nThis module is for normalizing events. Mouse and Touch events will be\ncollected here, and fire PointerEvents that have the same semantics, no\nmatter the source.\nEvents fired:\n  - pointerdown: a pointing is added\n  - pointerup: a pointer is removed\n  - pointermove: a pointer is moved\n  - pointerover: a pointer crosses into an element\n  - pointerout: a pointer leaves an element\n  - pointercancel: a pointer will no longer generate events",
+            "line": " example/pointerevents.js:474"
+        },
+        {
+            "message": "Missing item type\nAdd a new event source that will generate pointer events.\n\n`inSource` must contain an array of event names named `events`, and\nfunctions with the names specified in the `events` array.",
+            "line": " example/pointerevents.js:495"
+        },
+        {
+            "message": "Missing item type\nCreates a new Event of type `inType`, based on the information in\n`inEvent`.",
+            "line": " example/pointerevents.js:612"
+        },
+        {
+            "message": "Missing item type\nReturns a snapshot of inEvent, with writable properties.",
+            "line": " example/pointerevents.js:637"
+        },
+        {
+            "message": "Missing item type\nDispatches the event to its target.",
+            "line": " example/pointerevents.js:699"
+        },
+        {
+            "message": "Missing item type\nThis module uses Mutation Observers to dynamically adjust which nodes will\ngenerate Pointer Events.\n\nAll nodes that wish to generate Pointer Events must have the attribute\n`touch-action` set to `none`.",
+            "line": " example/pointerevents.js:721"
+        },
+        {
+            "message": "Missing item type\nThis module contains the handlers for native platform events.\nFrom here, the dispatcher is called to create unified pointer events.\nIncluded are touch events (v1), mouse events, and MSPointerEvents.",
+            "line": " example/pointerevents.js:1348"
+        }
+    ]
 }

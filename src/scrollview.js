@@ -64,11 +64,10 @@
     };
 
     function triggerEvent(elem, type, data) {
-        var ev = new CustomEvent(type, {
-            detail: data || {},
-            bubbles: true,
-            cancelable: true
-        });
+        var ev = document.createEvent('Event');
+
+        ev.initEvent(type, true, true);
+        ev.detail = data || {};
 
         elem.dispatchEvent(ev);
     }
@@ -228,7 +227,7 @@
         },
 
         _handleStart: function (ev) {
-            if (!this._enabled || this._curPointer || (ev.pointerType === 'mouse' && ev.buttons !== 1)) {
+            if (!this._enabled || this._curPointer || (ev.pointerType === 'mouse' && ev.button !== 0)) {
                 return;
             }
 
