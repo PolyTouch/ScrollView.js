@@ -418,7 +418,7 @@
             if (!this._isOutOfBoundaries() && (newX !== this.x || newY !== this.y)) {
                 this._inTransition = true;
 
-                this.scroller.addEventListener('transitionEnd', this._handleInertiaEnd, false);
+                this.scroller.addEventListener('transitionend', this._handleInertiaEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
                 this.scrollTo(newX, newY, time);
@@ -432,7 +432,7 @@
                 return;
             }
 
-            this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
+            this.scroller.removeEventListener('transitionend', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
 
             this._startBounceTransition();
@@ -449,7 +449,7 @@
             this._inTransition = true;
 
             if (this.options.bounce && (newX !== this.x || newY !== this.y)) {
-                this.scroller.addEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+                this.scroller.addEventListener('transitionend', this._handleBounceTransitionEnd, false);
                 this.scroller.addEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
 
 
@@ -469,7 +469,7 @@
                 return;
             }
 
-            this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+            this.scroller.removeEventListener('transitionend', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
 
             triggerEvent(this.view, 'scrollend', {
@@ -481,9 +481,9 @@
         },
 
         _forceTransitionEnd: function (suppress) {
-            this.scroller.removeEventListener('transitionEnd', this._handleInertiaEnd, false);
+            this.scroller.removeEventListener('transitionend', this._handleInertiaEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleInertiaEnd, false);
-            this.scroller.removeEventListener('transitionEnd', this._handleBounceTransitionEnd, false);
+            this.scroller.removeEventListener('transitionend', this._handleBounceTransitionEnd, false);
             this.scroller.removeEventListener('webkitTransitionEnd', this._handleBounceTransitionEnd, false);
             this._transform.apply(this, this._getTransformPosition() || [0, 0]);
 
